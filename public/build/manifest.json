@@ -1,0 +1,379 @@
+{
+  "_PageHeader-990ki811.js": {
+    "file": "assets/PageHeader-990ki811.js",
+    "name": "PageHeader",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-DYaKapkn.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/icon-fonts/RemixIcons/fonts/remixicon.eot": {
+    "file": "assets/remixicon-DUK49BtM.eot",
+    "src": "resources/icon-fonts/RemixIcons/fonts/remixicon.eot"
+  },
+  "resources/icon-fonts/RemixIcons/fonts/remixicon.svg": {
+    "file": "assets/remixicon-ncU_JTfY.svg",
+    "src": "resources/icon-fonts/RemixIcons/fonts/remixicon.svg"
+  },
+  "resources/icon-fonts/RemixIcons/fonts/remixicon.ttf": {
+    "file": "assets/remixicon-D9ZyeRwQ.ttf",
+    "src": "resources/icon-fonts/RemixIcons/fonts/remixicon.ttf"
+  },
+  "resources/icon-fonts/RemixIcons/fonts/remixicon.woff": {
+    "file": "assets/remixicon-DfzPQSMi.woff",
+    "src": "resources/icon-fonts/RemixIcons/fonts/remixicon.woff"
+  },
+  "resources/icon-fonts/RemixIcons/fonts/remixicon.woff2": {
+    "file": "assets/remixicon-BVOYbT3K.woff2",
+    "src": "resources/icon-fonts/RemixIcons/fonts/remixicon.woff2"
+  },
+  "resources/icon-fonts/bootstrap-icons/icons/font/fonts/bootstrap-icons.woff": {
+    "file": "assets/bootstrap-icons-BOrJxbIo.woff",
+    "src": "resources/icon-fonts/bootstrap-icons/icons/font/fonts/bootstrap-icons.woff"
+  },
+  "resources/icon-fonts/bootstrap-icons/icons/font/fonts/bootstrap-icons.woff2": {
+    "file": "assets/bootstrap-icons-BtvjY1KL.woff2",
+    "src": "resources/icon-fonts/bootstrap-icons/icons/font/fonts/bootstrap-icons.woff2"
+  },
+  "resources/images/11.jpg": {
+    "file": "assets/11-n3-yFnt_.jpg",
+    "src": "resources/images/11.jpg"
+  },
+  "resources/images/12.jpg": {
+    "file": "assets/12-B8QUwnYl.jpg",
+    "src": "resources/images/12.jpg"
+  },
+  "resources/images/15.jpg": {
+    "file": "assets/15-Dk0YIl1H.jpg",
+    "src": "resources/images/15.jpg"
+  },
+  "resources/images/2.jpg": {
+    "file": "assets/2-UJyHx8UO.jpg",
+    "src": "resources/images/2.jpg"
+  },
+  "resources/images/21.jpg": {
+    "file": "assets/21-DtkZLb_4.jpg",
+    "src": "resources/images/21.jpg"
+  },
+  "resources/images/3.jpg": {
+    "file": "assets/3-DCsHh89K.jpg",
+    "src": "resources/images/3.jpg"
+  },
+  "resources/images/4.jpg": {
+    "file": "assets/4-1eseK_oM.jpg",
+    "src": "resources/images/4.jpg"
+  },
+  "resources/images/5.jpg": {
+    "file": "assets/5-QpOq0SUT.jpg",
+    "src": "resources/images/5.jpg"
+  },
+  "resources/images/6.jpg": {
+    "file": "assets/6-D5Uz9VQ8.jpg",
+    "src": "resources/images/6.jpg"
+  },
+  "resources/images/7.jpg": {
+    "file": "assets/7-Cn6_mWAx.jpg",
+    "src": "resources/images/7.jpg"
+  },
+  "resources/images/8.jpg": {
+    "file": "assets/8-2WEbZMW-.jpg",
+    "src": "resources/images/8.jpg"
+  },
+  "resources/images/media-85.png": {
+    "file": "assets/media-85-DdLgRTE_.png",
+    "src": "resources/images/media-85.png"
+  },
+  "resources/js/Pages/Agile/Backlog.vue": {
+    "file": "assets/Backlog-CRGAXiTG.js",
+    "name": "Backlog",
+    "src": "resources/js/Pages/Agile/Backlog.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Agile/Definitions.vue": {
+    "file": "assets/Definitions-BEfGs6jw.js",
+    "name": "Definitions",
+    "src": "resources/js/Pages/Agile/Definitions.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Agile/Sprints.vue": {
+    "file": "assets/Sprints-BUjwW_iI.js",
+    "name": "Sprints",
+    "src": "resources/js/Pages/Agile/Sprints.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Communication/Chat.vue": {
+    "file": "assets/Chat-IRnGxyGb.js",
+    "name": "Chat",
+    "src": "resources/js/Pages/Communication/Chat.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Dashboard.vue": {
+    "file": "assets/Dashboard-BSZvbeR9.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Dashboard.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ],
+    "assets": [
+      "assets/media-85-DdLgRTE_.png",
+      "assets/2-UJyHx8UO.jpg",
+      "assets/3-DCsHh89K.jpg",
+      "assets/21-DtkZLb_4.jpg",
+      "assets/4-1eseK_oM.jpg",
+      "assets/11-n3-yFnt_.jpg",
+      "assets/5-QpOq0SUT.jpg",
+      "assets/6-D5Uz9VQ8.jpg",
+      "assets/8-2WEbZMW-.jpg",
+      "assets/15-Dk0YIl1H.jpg",
+      "assets/12-B8QUwnYl.jpg",
+      "assets/7-Cn6_mWAx.jpg"
+    ]
+  },
+  "resources/js/Pages/Initiation/Kickoff.vue": {
+    "file": "assets/Kickoff-DRc_-3MC.js",
+    "name": "Kickoff",
+    "src": "resources/js/Pages/Initiation/Kickoff.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Initiation/Stakeholders.vue": {
+    "file": "assets/Stakeholders-D_Svy_6t.js",
+    "name": "Stakeholders",
+    "src": "resources/js/Pages/Initiation/Stakeholders.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Create.vue": {
+    "file": "assets/Create-BzttcWcJ.js",
+    "name": "Create",
+    "src": "resources/js/Pages/Projects/Create.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Index.vue": {
+    "file": "assets/Index-uYnZBUt3.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Projects/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Projects/Show.vue": {
+    "file": "assets/Show-CMtExTFk.js",
+    "name": "Show",
+    "src": "resources/js/Pages/Projects/Show.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Quality/ChangeLog.vue": {
+    "file": "assets/ChangeLog-D8GDgJDT.js",
+    "name": "ChangeLog",
+    "src": "resources/js/Pages/Quality/ChangeLog.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Quality/QaTesting.vue": {
+    "file": "assets/QaTesting-D7bwj3KP.js",
+    "name": "QaTesting",
+    "src": "resources/js/Pages/Quality/QaTesting.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Quality/Risks.vue": {
+    "file": "assets/Risks-CmEna8qy.js",
+    "name": "Risks",
+    "src": "resources/js/Pages/Quality/Risks.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Reports/Analytics.vue": {
+    "file": "assets/Analytics-Cugl78Ad.js",
+    "name": "Analytics",
+    "src": "resources/js/Pages/Reports/Analytics.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Reports/Documents.vue": {
+    "file": "assets/Documents-YBw0hLMu.js",
+    "name": "Documents",
+    "src": "resources/js/Pages/Reports/Documents.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Reports/LessonsLearned.vue": {
+    "file": "assets/LessonsLearned-BCujFRuh.js",
+    "name": "LessonsLearned",
+    "src": "resources/js/Pages/Reports/LessonsLearned.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Resources/Budget.vue": {
+    "file": "assets/Budget-2T1NFD83.js",
+    "name": "Budget",
+    "src": "resources/js/Pages/Resources/Budget.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Resources/Gantt.vue": {
+    "file": "assets/Gantt-BBzyRLgy.js",
+    "name": "Gantt",
+    "src": "resources/js/Pages/Resources/Gantt.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Resources/Milestones.vue": {
+    "file": "assets/Milestones-bTnzU2Ao.js",
+    "name": "Milestones",
+    "src": "resources/js/Pages/Resources/Milestones.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Resources/Team.vue": {
+    "file": "assets/Team-Frcf1U_5.js",
+    "name": "Team",
+    "src": "resources/js/Pages/Resources/Team.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Resources/TimeTracking.vue": {
+    "file": "assets/TimeTracking-CNwP_-0a.js",
+    "name": "TimeTracking",
+    "src": "resources/js/Pages/Resources/TimeTracking.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Tasks/Index.vue": {
+    "file": "assets/Index-Dz5I6B4i.js",
+    "name": "Index",
+    "src": "resources/js/Pages/Tasks/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.js",
+      "_PageHeader-990ki811.js"
+    ]
+  },
+  "resources/js/Pages/Tasks/Kanban.vue": {
+    "file": "assets/Kanban-CT7Ij5H2.js",
+    "name": "Kanban",
+    "src": "resources/js/Pages/Tasks/Kanban.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/Pages/Tasks/Workflows.vue": {
+    "file": "assets/Workflows-C6T-PsRV.js",
+    "name": "Workflows",
+    "src": "resources/js/Pages/Tasks/Workflows.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "_PageHeader-990ki811.js",
+      "resources/js/app.js"
+    ]
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-1Rpt4_BV.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Agile/Backlog.vue",
+      "resources/js/Pages/Agile/Definitions.vue",
+      "resources/js/Pages/Agile/Sprints.vue",
+      "resources/js/Pages/Communication/Chat.vue",
+      "resources/js/Pages/Dashboard.vue",
+      "resources/js/Pages/Initiation/Kickoff.vue",
+      "resources/js/Pages/Initiation/Stakeholders.vue",
+      "resources/js/Pages/Projects/Create.vue",
+      "resources/js/Pages/Projects/Index.vue",
+      "resources/js/Pages/Projects/Show.vue",
+      "resources/js/Pages/Quality/ChangeLog.vue",
+      "resources/js/Pages/Quality/QaTesting.vue",
+      "resources/js/Pages/Quality/Risks.vue",
+      "resources/js/Pages/Reports/Analytics.vue",
+      "resources/js/Pages/Reports/Documents.vue",
+      "resources/js/Pages/Reports/LessonsLearned.vue",
+      "resources/js/Pages/Resources/Budget.vue",
+      "resources/js/Pages/Resources/Gantt.vue",
+      "resources/js/Pages/Resources/Milestones.vue",
+      "resources/js/Pages/Resources/Team.vue",
+      "resources/js/Pages/Resources/TimeTracking.vue",
+      "resources/js/Pages/Tasks/Index.vue",
+      "resources/js/Pages/Tasks/Kanban.vue",
+      "resources/js/Pages/Tasks/Workflows.vue"
+    ],
+    "css": [
+      "assets/app-B2YLSsDZ.css"
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+This folder should contain the following images:
+- desktop-logo.png (main logo for light theme)
+- desktop-dark.png (main logo for dark theme)
+- toggle-logo.png (small logo for collapsed sidebar - light)
+- toggle-dark.png (small logo for collapsed sidebar - dark)
+- user.png (default user avatar)
+- favicon.ico (browser favicon)
+
+Copy these files from the original assets/images folder or create your own.
+
