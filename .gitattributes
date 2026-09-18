@@ -1,0 +1,107 @@
+# Normalize line endings to LF in the repository.
+# Checkout uses LF everywhere so Windows, macOS, and Linux stay consistent.
+* text=auto eol=lf
+
+# -----------------------------------------------------------------------------
+# Source and config as text
+# -----------------------------------------------------------------------------
+*.php         text diff=php
+*.blade.php   text diff=html
+*.html        text diff=html
+*.css         text diff=css
+*.scss        text diff=css
+*.sass        text diff=css
+*.less        text diff=css
+*.js          text diff=javascript
+*.mjs         text diff=javascript
+*.cjs         text diff=javascript
+*.ts          text diff=typescript
+*.tsx         text diff=typescript
+*.vue         text
+*.json        text
+*.jsonc       text
+*.yml         text
+*.yaml        text
+*.xml         text
+*.md          text diff=markdown
+*.txt         text
+*.csv         text
+*.sql         text
+*.env.example text
+*.ini         text
+*.cfg         text
+*.conf        text
+*.sh          text eol=lf
+*.bash        text eol=lf
+*.zsh         text eol=lf
+*.bat         text eol=crlf
+*.cmd         text eol=crlf
+*.ps1         text eol=crlf
+*.svg         text
+
+# -----------------------------------------------------------------------------
+# Lockfiles: treat as text, avoid noisy merge conflicts
+# -----------------------------------------------------------------------------
+composer.lock merge=binary
+package-lock.json merge=binary
+yarn.lock     merge=binary
+pnpm-lock.yaml merge=binary
+
+# -----------------------------------------------------------------------------
+# Binary assets (no line-ending conversion)
+# -----------------------------------------------------------------------------
+*.png         binary
+*.jpg         binary
+*.jpeg        binary
+*.gif         binary
+*.webp        binary
+*.ico         binary
+*.bmp         binary
+*.tif         binary
+*.tiff        binary
+*.psd         binary
+*.ai          binary
+*.woff        binary
+*.woff2       binary
+*.ttf         binary
+*.otf         binary
+*.eot         binary
+*.pdf         binary
+*.zip         binary
+*.gz          binary
+*.tar         binary
+*.7z          binary
+*.rar         binary
+*.mp3         binary
+*.mp4         binary
+*.webm        binary
+*.wav         binary
+*.mov         binary
+*.exe         binary
+*.dll         binary
+*.so          binary
+*.dylib       binary
+
+# -----------------------------------------------------------------------------
+# Git LFS pointers (enable LFS on the repo if you store large binaries)
+# Uncomment and run: git lfs install && git lfs track
+# -----------------------------------------------------------------------------
+# *.psd filter=lfs diff=lfs merge=lfs -text
+# *.mp4 filter=lfs diff=lfs merge=lfs -text
+# *.zip filter=lfs diff=lfs merge=lfs -text
+
+# -----------------------------------------------------------------------------
+# Export / linguist
+# -----------------------------------------------------------------------------
+/.github          export-ignore
+/.gitattributes   export-ignore
+/.gitignore       export-ignore
+CHANGELOG.md      export-ignore
+.styleci.yml      export-ignore
+
+vendor/**         linguist-vendored
+node_modules/**   linguist-vendored
+public/build/**   linguist-generated
+dist/**           linguist-generated
+*.min.js          linguist-generated
+*.min.css         linguist-generated
