@@ -1,177 +1,39 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { computed, nextTick, ref } from 'vue'
+import { router } from '@inertiajs/vue3'
 
-const emit = defineEmits(['toggle-dark'])
-
-const isSearchOpen = ref(false)
-const searchQuery = ref('')
-const isProfileDropdownOpen = ref(false)
-
-const toggleSearch = () => {
-  isSearchOpen.value = !isSearchOpen.value
-}
-
-const toggleFullscreen = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen()
-  } else {
-    document.exitFullscreen()
-  }
-}
-
-const toggleProfileDropdown = () => {
-  isProfileDropdownOpen.value = !isProfileDropdownOpen.value
-}
-
-onMounted(() => {
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    const profileDropdown = document.getElementById('headerProfileDropdown')
-    if (profileDropdown && !profileDropdown.closest('.header-element')?.contains(e.target)) {
-      isProfileDropdownOpen.value = false
-    }
-  })
+const emit = defineEmits(['toggle-dark', 'toggle-sidebar'])
+const profileOpen = ref(false)
+const notificationsOpen = ref(false)
+const query = ref('')
+const searchInput = ref(null)
+const searchItems = [
+  { label: 'Projects', detail: 'Browse active projects', href: '/projects' },
+  { label: 'Task List', detail: 'Find and manage tasks', href: '/tasks' },
+  { label: 'Team Resources', detail: 'People and allocations', href: '/resources/team' },
+  { label: 'QA & Testing', detail: 'Test cases and results', href: '/quality/qa-testing' },
+]
+const results = computed(() => {
+  const term = query.value.trim().toLowerCase()
+  return term ? searchItems.filter(item => `${item.label} ${item.detail}`.toLowerCase().includes(term)) : []
 })
+const chooseResult = (item) => { query.value = ''; router.visit(item.href) }
+const focusSearch = async () => { await nextTick(); searchInput.value?.focus() }
 </script>
-
 <template>
-  <header class="app-header sticky" id="header">
-    <div class="main-header-container container-fluid">
-      <!-- Header Content Left -->
-      <div class="header-content-left">
-        <div class="header-element">
-          <div class="horizontal-logo">
-            <Link class="header-logo" href="/">
-              <img alt="KEDEBАН ERP Logo" class="desktop-logo" src="/images/Kedebah Logo.png"/>
-              <img alt="KEDEBАН ERP Logo" class="toggle-dark" src="/images/Kedebah Logo.png"/>
-              <img alt="KEDEBАН ERP Logo" class="desktop-dark" src="/images/Kedebah Logo.png"/>
-              <img alt="KEDEBАН ERP Logo" class="toggle-logo" src="/images/Kedebah Logo.png"/>
-            </Link>
-          </div>
-        </div>
-        
-        <div class="header-element mx-lg-0">
-          <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" href="javascript:void(0);">
-            <span></span>
-          </a>
-        </div>
-        
-        <div class="header-element header-search md:!block !hidden my-auto auto-complete-search">
-          <input 
-            v-model="searchQuery"
-            autocomplete="off" 
-            class="header-search-bar form-control" 
-            placeholder="Search anything here ..." 
-            type="text"
-          />
-          <a class="header-search-icon border-0" href="javascript:void(0);">
-            <i class="ri-search-line"></i>
-          </a>
-        </div>
+  <header class="topbar">
+    <button class="icon-button mobile-menu" aria-label="Open navigation" @click="emit('toggle-sidebar')"><i class="ri-menu-2-line"></i></button>
+    <div class="topbar-search" @click="focusSearch">
+      <i class="ri-search-line"></i><input ref="searchInput" v-model="query" aria-label="Search workspace" placeholder="Search projects, tasks, or people..." @keydown.escape="query = ''" />
+      <div v-if="query" class="search-results" role="listbox">
+        <button v-for="item in results" :key="item.href" type="button" @click.stop="chooseResult(item)"><b>{{ item.label }}</b><small>{{ item.detail }}</small></button>
+        <p v-if="!results.length">No matching workspace sections.</p>
       </div>
-      
-      <!-- Header Content Right -->
-      <ul class="header-content-right">
-        <!-- Mobile Search -->
-        <li class="header-element md:!hidden block">
-          <a class="header-link" href="javascript:void(0);" @click="toggleSearch">
-            <i class="bi bi-search header-link-icon"></i>
-          </a>
-        </li>
-        
-        <!-- Dark Mode Toggle -->
-        <li class="header-element">
-          <a class="header-link" href="javascript:void(0);" @click="$emit('toggle-dark')">
-            <i class="ri-moon-line header-link-icon"></i>
-          </a>
-        </li>
-        
-        <!-- Fullscreen -->
-        <li class="header-element header-fullscreen">
-          <a class="header-link" href="javascript:void(0);" @click="toggleFullscreen">
-            <i class="ri-fullscreen-line header-link-icon"></i>
-          </a>
-        </li>
-        
-        <!-- Notifications -->
-        <li class="header-element notifications-dropdown">
-          <a class="header-link" href="javascript:void(0);">
-            <i class="ri-notification-3-line header-link-icon"></i>
-            <span class="header-icon-pulse bg-primary rounded pulse pulse-secondary"></span>
-          </a>
-        </li>
-        
-        <!-- Profile -->
-        <li class="header-element ti-dropdown hs-dropdown">
-          <a 
-            class="header-link hs-dropdown-toggle ti-dropdown-toggle" 
-            href="javascript:void(0);"
-            id="headerProfileDropdown"
-            @click="toggleProfileDropdown"
-            :aria-expanded="isProfileDropdownOpen"
-          >
-            <div class="flex items-center">
-              <span class="avatar avatar-sm bg-primary text-white">PM</span>
-            </div>
-          </a>
-          <ul 
-            v-show="isProfileDropdownOpen"
-            class="main-header-dropdown hs-dropdown-menu ti-dropdown-menu pt-0 overflow-hidden header-profile-dropdown"
-            aria-labelledby="headerProfileDropdown"
-            style="position: absolute; right: 0; top: 100%; z-index: 1000; min-width: 200px;"
-          >
-            <li>
-              <div class="ti-dropdown-item text-center border-b block">
-                <span>Project Manager</span>
-                <span class="block text-xs text-textmuted">Admin</span>
-              </div>
-            </li>
-            <li><a class="ti-dropdown-item flex items-center" href="javascript:void(0);"><i class="ri-user-line me-2"></i>Profile</a></li>
-            <li><a class="ti-dropdown-item flex items-center" href="javascript:void(0);"><i class="ri-settings-3-line me-2"></i>Settings</a></li>
-            <li class="border-t"><a class="ti-dropdown-item flex items-center" href="javascript:void(0);"><i class="ri-logout-box-line me-2"></i>Log Out</a></li>
-          </ul>
-        </li>
-      </ul>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-button desktop-only" aria-label="Toggle theme" @click="emit('toggle-dark')"><i class="ri-moon-line"></i></button>
+      <div class="menu-anchor"><button class="icon-button notification-button" aria-label="Notifications" @click="notificationsOpen = !notificationsOpen"><i class="ri-notification-3-line"></i><span></span></button><div v-if="notificationsOpen" class="popover notifications-popover"><p class="popover-title">Notifications <small>2 new</small></p><a href="#"><i class="ri-checkbox-circle-line"></i><span><b>Design review completed</b><small>Website Redesign · 12m ago</small></span></a><a href="#"><i class="ri-calendar-event-line"></i><span><b>Deadline approaching</b><small>Data Migration · Tomorrow</small></span></a></div></div>
+      <div class="menu-anchor"><button class="profile-button" @click="profileOpen = !profileOpen"><span class="profile-avatar">PM</span><span class="profile-copy desktop-only"><b>Project Manager</b><small>Workspace admin</small></span><i class="ri-arrow-down-s-line desktop-only"></i></button><div v-if="profileOpen" class="popover profile-popover"><a href="#"><i class="ri-user-line"></i>My profile</a><a href="#"><i class="ri-settings-3-line"></i>Workspace settings</a><a href="#" class="danger-link"><i class="ri-logout-box-r-line"></i>Sign out</a></div></div>
     </div>
   </header>
 </template>
-
-<style scoped>
-.header-link-icon {
-  font-size: 1.25rem;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  text-decoration: none;
-}
-
-.header-logo img {
-  max-height: 300px;
-  height: auto;
-  width: auto;
-  object-fit: contain;
-}
-
-.header-logo:hover img {
-  opacity: 0.9;
-}
-</style>

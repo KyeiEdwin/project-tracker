@@ -1,203 +1,29 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { usePage, Link } from '@inertiajs/vue3'
-
-const page = usePage()
-const openMenus = ref([])
-
+defineProps({ open: Boolean })
+const emit = defineEmits(['navigate'])
+const page = usePage(); const openMenus = ref([])
 const menuItems = [
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    icon: 'ri-home-line',
-    to: '/'
-  },
-  {
-    id: 'projects',
-    label: 'Projects',
-    icon: 'ri-folder-line',
-    children: [
-      { label: 'Projects List', to: '/projects' },
-      { label: 'Create Project', to: '/projects/create' },
-      { label: 'Project Details', to: '/projects/1' }
-    ]
-  },
-  {
-    id: 'initiation',
-    label: 'Initiation',
-    icon: 'ri-rocket-line',
-    children: [
-      { label: 'Kick-Off', to: '/initiation/kickoff' },
-      { label: 'Stakeholders', to: '/initiation/stakeholders' }
-    ]
-  },
-  {
-    id: 'agile',
-    label: 'Agile',
-    icon: 'ri-loop-left-line',
-    children: [
-      { label: 'Sprints', to: '/agile/sprints' },
-      { label: 'Backlog', to: '/agile/backlog' },
-      { label: 'DoR / DoD', to: '/agile/definitions' }
-    ]
-  },
-  {
-    id: 'tasks',
-    label: 'Tasks',
-    icon: 'ri-checkbox-circle-line',
-    children: [
-      { label: 'Task List', to: '/tasks' },
-      { label: 'Kanban Board', to: '/tasks/kanban' },
-      { label: 'Workflows', to: '/tasks/workflows' }
-    ]
-  },
-  {
-    id: 'resources',
-    label: 'Resources',
-    icon: 'ri-team-line',
-    children: [
-      { label: 'Team', to: '/resources/team' },
-      { label: 'Time Tracking', to: '/resources/time-tracking' },
-      { label: 'Budget', to: '/resources/budget' },
-      { label: 'Milestones', to: '/resources/milestones' },
-      { label: 'Gantt Chart', to: '/resources/gantt' }
-    ]
-  },
-  {
-    id: 'quality',
-    label: 'Quality',
-    icon: 'ri-shield-check-line',
-    children: [
-      { label: 'QA & Testing', to: '/quality/qa-testing' },
-      { label: 'Risks & Issues', to: '/quality/risks' },
-      { label: 'Change Log', to: '/quality/change-log' }
-    ]
-  },
-  {
-    id: 'reports',
-    label: 'Reports',
-    icon: 'ri-bar-chart-box-line',
-    children: [
-      { label: 'Analytics', to: '/reports/analytics' },
-      { label: 'Documents', to: '/reports/documents' },
-      { label: 'Lessons Learned', to: '/reports/lessons-learned' }
-    ]
-  },
-  {
-    id: 'chat',
-    label: 'Chat',
-    icon: 'ri-chat-3-line',
-    to: '/chat'
-  }
+  { id:'dashboard', label:'Overview', icon:'ri-layout-grid-line', to:'/' },
+  { id:'projects', label:'Projects', icon:'ri-folder-3-line', children:[{label:'All projects',to:'/projects'},{label:'Create project',to:'/projects/create'}] },
+  { id:'initiation', label:'Initiation', icon:'ri-rocket-2-line', children:[{label:'Kick-off',to:'/initiation/kickoff'},{label:'Stakeholders',to:'/initiation/stakeholders'}] },
+  { id:'agile', label:'Agile delivery', icon:'ri-flashlight-line', children:[{label:'Sprints',to:'/agile/sprints'},{label:'Backlog',to:'/agile/backlog'},{label:'Definitions',to:'/agile/definitions'}] },
+  { id:'tasks', label:'Tasks', icon:'ri-checkbox-circle-line', children:[{label:'Task list',to:'/tasks'},{label:'Kanban board',to:'/tasks/kanban'},{label:'Workflows',to:'/tasks/workflows'}] },
+  { id:'resources', label:'Resources', icon:'ri-team-line', children:[{label:'Team',to:'/resources/team'},{label:'Time tracking',to:'/resources/time-tracking'},{label:'Budget',to:'/resources/budget'},{label:'Milestones',to:'/resources/milestones'},{label:'Gantt chart',to:'/resources/gantt'}] },
+  { id:'quality', label:'Quality', icon:'ri-shield-check-line', children:[{label:'QA & testing',to:'/quality/qa-testing'},{label:'Risks & issues',to:'/quality/risks'},{label:'Change log',to:'/quality/change-log'}] },
+  { id:'reports', label:'Reports', icon:'ri-pie-chart-2-line', children:[{label:'Analytics',to:'/reports/analytics'},{label:'Documents',to:'/reports/documents'},{label:'Lessons learned',to:'/reports/lessons-learned'}] },
+  { id:'chat', label:'Team chat', icon:'ri-message-3-line', to:'/chat' }
 ]
-
-const toggleMenu = (menuId) => {
-  const index = openMenus.value.indexOf(menuId)
-  if (index > -1) {
-    openMenus.value.splice(index, 1)
-  } else {
-    // Close other menus first, then open this one
-    openMenus.value = [menuId]
-  }
-}
-
-const closeMenus = () => {
-  openMenus.value = []
-}
-
-const isMenuOpen = (menuId) => {
-  return openMenus.value.includes(menuId)
-}
-
-const isActive = (path) => {
-  return page.url === path
-}
-
-const isChildActive = (children) => {
-  return children?.some(child => page.url === child.to || page.url.startsWith(child.to + '/'))
-}
+const isActive = path => page.url.split('?')[0] === path
+const isChildActive = children => children?.some(child => isActive(child.to))
+const menuOpen = item => openMenus.value.includes(item.id) || isChildActive(item.children)
+const toggle = item => { openMenus.value = menuOpen(item) ? openMenus.value.filter(id => id !== item.id) : [item.id] }
 </script>
-
 <template>
-  <aside class="app-sidebar sticky" id="sidebar">
-    <div class="container-xl">
-      <div class="main-sidebar" id="sidebar-scroll">
-        <nav class="main-menu-container nav nav-pills sub-open">
-          <!-- Slide Left Arrow -->
-          <div class="slide-left" id="slide-left">
-            <svg fill="#7b8191" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
-            </svg>
-          </div>
-          
-          <!-- Menu Items -->
-          <ul class="main-menu" style="display: flex; align-items: center; flex-wrap: wrap;">
-            <li 
-              v-for="item in menuItems" 
-              :key="item.id"
-              class="slide"
-              :class="{ 
-                'has-sub': item.children, 
-                'open': isMenuOpen(item.id) || isChildActive(item.children),
-                'active': isActive(item.to) || isChildActive(item.children)
-              }"
-              style="position: relative; display: block;"
-            >
-              <!-- Menu item with children (dropdown) -->
-              <template v-if="item.children">
-                <a 
-                  class="side-menu__item" 
-                  :class="{ 'active': isChildActive(item.children) }"
-                  href="javascript:void(0);"
-                  @click="toggleMenu(item.id)"
-                  style="display: flex; align-items: center;"
-                >
-                  <i :class="[item.icon, 'side-menu__icon']"></i>
-                  <span class="side-menu__label">{{ item.label }}</span>
-                  <i class="ri-arrow-down-s-line side-menu__angle"></i>
-                </a>
-                <ul 
-                  v-if="isMenuOpen(item.id)" 
-                  class="pm-dropdown-menu"
-                >
-                  <li v-for="child in item.children" :key="child.to">
-                    <Link 
-                      :href="child.to" 
-                      :class="{ 'active': isActive(child.to) }"
-                      @click="closeMenus"
-                    >
-                      {{ child.label }}
-                    </Link>
-                  </li>
-                </ul>
-              </template>
-              
-              <!-- Simple menu item (no children) -->
-              <template v-else>
-                <Link 
-                  :href="item.to" 
-                  class="side-menu__item"
-                  :class="{ 'active': isActive(item.to) }"
-                >
-                  <i :class="[item.icon, 'side-menu__icon']"></i>
-                  <span class="side-menu__label">{{ item.label }}</span>
-                </Link>
-              </template>
-            </li>
-          </ul>
-          
-          <!-- Slide Right Arrow -->
-          <div class="slide-right" id="slide-right">
-            <svg fill="#7b8191" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
-            </svg>
-          </div>
-        </nav>
-      </div>
-    </div>
+  <aside class="workspace-sidebar" :class="{ 'is-open': open }">
+    <Link href="/" class="brand" @click="emit('navigate')"><span class="brand-mark"><i class="ri-focus-3-line"></i></span><span>Northstar<small>PROJECTS</small></span></Link>
+    <nav class="sidebar-nav" aria-label="Main navigation"><template v-for="item in menuItems" :key="item.id"><button v-if="item.children" class="nav-item nav-toggle" :class="{active:isChildActive(item.children)}" @click="toggle(item)"><i :class="item.icon"></i><span>{{ item.label }}</span><i class="ri-arrow-down-s-line nav-chevron" :class="{rotated:menuOpen(item)}"></i></button><div v-if="item.children && menuOpen(item)" class="nav-children"><Link v-for="child in item.children" :key="child.to" :href="child.to" :class="{active:isActive(child.to)}" @click="emit('navigate')">{{ child.label }}</Link></div><Link v-else :href="item.to" class="nav-item" :class="{active:isActive(item.to)}" @click="emit('navigate')"><i :class="item.icon"></i><span>{{ item.label }}</span></Link></template></nav>
+    <div class="sidebar-help"><span class="help-icon"><i class="ri-lightbulb-flash-line"></i></span><div><b>Need a hand?</b><small>Explore workspace guides</small></div></div>
   </aside>
 </template>
-
-<style scoped>
-/* Scoped sidebar overrides if needed */
-</style>

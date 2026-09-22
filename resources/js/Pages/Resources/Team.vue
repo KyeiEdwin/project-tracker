@@ -1,129 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
-
-const teamMembers = ref([
-  { id: 1, name: 'John Doe', role: 'Frontend Developer', email: 'john@example.com', availability: 100, projects: 3 },
-  { id: 2, name: 'Jane Smith', role: 'Backend Developer', email: 'jane@example.com', availability: 80, projects: 2 },
-  { id: 3, name: 'Mike Johnson', role: 'UI/UX Designer', email: 'mike@example.com', availability: 100, projects: 4 },
-  { id: 4, name: 'Sarah Wilson', role: 'QA Engineer', email: 'sarah@example.com', availability: 60, projects: 2 },
-  { id: 5, name: 'David Brown', role: 'DevOps Engineer', email: 'david@example.com', availability: 50, projects: 5 }
-])
+import { useActionFeedback } from '@/composables/useActionFeedback'
+const { notify } = useActionFeedback()
+const teamMembers=ref([{id:1,name:'John Doe',role:'Frontend Developer',email:'john@example.com',availability:100,projects:3},{id:2,name:'Jane Smith',role:'Backend Developer',email:'jane@example.com',availability:80,projects:2},{id:3,name:'Mike Johnson',role:'UI/UX Designer',email:'mike@example.com',availability:100,projects:4},{id:4,name:'Sarah Wilson',role:'QA Engineer',email:'sarah@example.com',availability:60,projects:2}])
+const modal=ref(null),selected=ref(null),draft=ref({name:'',role:'',email:'',availability:100,projects:0})
+const openAdd=()=>{selected.value=null;draft.value={name:'',role:'',email:'',availability:100,projects:0};modal.value='edit'}
+const edit=m=>{selected.value=m;draft.value={...m};modal.value='edit'}
+const save=()=>{if(!draft.value.name.trim()||!draft.value.email.trim())return;if(selected.value)Object.assign(selected.value,draft.value);else teamMembers.value.unshift({...draft.value,id:Date.now()});modal.value=null;notify(selected.value?'Team member updated.':'Team invitation created.')}
+const remove=m=>{teamMembers.value=teamMembers.value.filter(x=>x.id!==m.id);modal.value=null;notify('Team member removed.')}
 </script>
-
-<template>
-  <div>
-    <PageHeader title="Team Resources" subtitle="Manage team members and allocations">
-      <template #actions>
-        <button class="ti-btn ti-btn-primary">
-          <i class="ri-user-add-line me-1"></i> Add Member
-        </button>
-      </template>
-    </PageHeader>
-
-    <div class="grid grid-cols-12 gap-6">
-      <!-- Team Stats -->
-      <div class="col-span-12 xl:col-span-3">
-        <div class="box">
-          <div class="box-body text-center">
-            <span class="avatar avatar-lg bg-primary/10 text-primary mb-3">
-              <i class="ri-team-line text-2xl"></i>
-            </span>
-            <h4 class="text-2xl font-bold">{{ teamMembers.length }}</h4>
-            <p class="text-textmuted">Team Members</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-span-12 xl:col-span-3">
-        <div class="box">
-          <div class="box-body text-center">
-            <span class="avatar avatar-lg bg-success/10 text-success mb-3">
-              <i class="ri-check-double-line text-2xl"></i>
-            </span>
-            <h4 class="text-2xl font-bold">{{ teamMembers.filter(m => m.availability === 100).length }}</h4>
-            <p class="text-textmuted">Fully Available</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-span-12 xl:col-span-3">
-        <div class="box">
-          <div class="box-body text-center">
-            <span class="avatar avatar-lg bg-warning/10 text-warning mb-3">
-              <i class="ri-time-line text-2xl"></i>
-            </span>
-            <h4 class="text-2xl font-bold">{{ teamMembers.filter(m => m.availability < 100 && m.availability > 50).length }}</h4>
-            <p class="text-textmuted">Partially Allocated</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-span-12 xl:col-span-3">
-        <div class="box">
-          <div class="box-body text-center">
-            <span class="avatar avatar-lg bg-danger/10 text-danger mb-3">
-              <i class="ri-user-unfollow-line text-2xl"></i>
-            </span>
-            <h4 class="text-2xl font-bold">{{ teamMembers.filter(m => m.availability <= 50).length }}</h4>
-            <p class="text-textmuted">Over-allocated</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Team List -->
-      <div class="col-span-12">
-        <div class="box">
-          <div class="box-header">
-            <h5 class="box-title">Team Members</h5>
-          </div>
-          <div class="box-body p-0">
-            <table class="table table-hover whitespace-nowrap">
-              <thead>
-                <tr>
-                  <th>Member</th>
-                  <th>Role</th>
-                  <th>Email</th>
-                  <th>Availability</th>
-                  <th>Projects</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="member in teamMembers" :key="member.id">
-                  <td>
-                    <div class="flex items-center gap-3">
-                      <span class="avatar avatar-sm bg-primary/10 text-primary avatar-rounded">
-                        {{ member.name.split(' ').map(n => n[0]).join('') }}
-                      </span>
-                      <span class="font-medium">{{ member.name }}</span>
-                    </div>
-                  </td>
-                  <td>{{ member.role }}</td>
-                  <td class="text-textmuted">{{ member.email }}</td>
-                  <td>
-                    <div class="flex items-center gap-2">
-                      <div class="progress progress-xs flex-1 max-w-[80px]">
-                        <div class="progress-bar" :class="{
-                          'bg-success': member.availability === 100,
-                          'bg-warning': member.availability < 100 && member.availability > 50,
-                          'bg-danger': member.availability <= 50
-                        }" :style="{ width: member.availability + '%' }"></div>
-                      </div>
-                      <span class="text-xs">{{ member.availability }}%</span>
-                    </div>
-                  </td>
-                  <td>{{ member.projects }}</td>
-                  <td>
-                    <div class="flex gap-1">
-                      <button class="ti-btn ti-btn-soft-primary ti-btn-icon ti-btn-sm"><i class="ri-eye-line"></i></button>
-                      <button class="ti-btn ti-btn-soft-info ti-btn-icon ti-btn-sm"><i class="ri-edit-line"></i></button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
+<template><div><PageHeader title="Team Resources" subtitle="Manage team members and allocations"><template #actions><button class="ti-btn ti-btn-primary" data-feedback-handled="true" @click="openAdd"><i class="ri-user-add-line me-1"></i> Add Member</button></template></PageHeader><div class="grid grid-cols-12 gap-6"><div class="col-span-12"><div class="box"><div class="box-header"><h5 class="box-title">Team Members</h5></div><div class="box-body p-0"><table class="table table-hover whitespace-nowrap"><thead><tr><th>Member</th><th>Role</th><th>Email</th><th>Availability</th><th>Projects</th><th>Actions</th></tr></thead><tbody><tr v-for="member in teamMembers" :key="member.id"><td class="font-medium">{{member.name}}</td><td>{{member.role}}</td><td class="text-textmuted">{{member.email}}</td><td><div class="flex items-center gap-2"><div class="progress progress-xs flex-1 max-w-[80px]"><div class="progress-bar bg-primary" :style="{width:member.availability+'%'}"></div></div>{{member.availability}}%</div></td><td>{{member.projects}}</td><td><div class="flex gap-1"><button class="ti-btn ti-btn-soft-primary ti-btn-icon ti-btn-sm" data-feedback-handled="true" aria-label="View member" @click="selected=member;modal='view'"><i class="ri-eye-line"></i></button><button class="ti-btn ti-btn-soft-info ti-btn-icon ti-btn-sm" data-feedback-handled="true" aria-label="Edit member" @click="edit(member)"><i class="ri-edit-line"></i></button><button class="ti-btn ti-btn-soft-danger ti-btn-icon ti-btn-sm" data-feedback-handled="true" aria-label="Remove member" @click="selected=member;modal='delete'"><i class="ri-delete-bin-line"></i></button></div></td></tr></tbody></table></div></div></div></div><div v-if="modal" class="fixed inset-0 z-[80] flex items-center justify-center bg-black/40" @click.self="modal=null"><div class="bg-white dark:bg-bgdark rounded-xl shadow-xl w-full max-w-md mx-4"><div class="px-6 py-4 border-b flex justify-between"><h3 class="font-semibold">{{modal==='edit'?(selected?'Edit Member':'Add Member'):modal==='view'?'Member details':'Remove Member'}}</h3><button class="ti-btn ti-btn-sm ti-btn-light" @click="modal=null">Close</button></div><div v-if="modal==='edit'" class="p-6"><label class="ti-form-label">Name</label><input v-model="draft.name" class="ti-form-control mb-3"><label class="ti-form-label">Role</label><input v-model="draft.role" class="ti-form-control mb-3"><label class="ti-form-label">Email</label><input v-model="draft.email" type="email" class="ti-form-control mb-3"><label class="ti-form-label">Availability</label><input v-model.number="draft.availability" type="number" min="0" max="100" class="ti-form-control"></div><div v-else-if="modal==='view'" class="p-6"><p><b>{{selected.name}}</b> — {{selected.role}}</p><p class="text-textmuted">{{selected.email}} · {{selected.availability}}% available</p></div><div v-else class="p-6">Remove <b>{{selected.name}}</b> from the team?</div><div class="px-6 py-4 border-t flex justify-end gap-2"><button class="ti-btn ti-btn-light" @click="modal=null">Cancel</button><button v-if="modal==='edit'" class="ti-btn ti-btn-primary" @click="save">Save Member</button><button v-if="modal==='delete'" class="ti-btn ti-btn-danger" @click="remove(selected)">Remove</button></div></div></div></div></template>

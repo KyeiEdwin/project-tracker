@@ -234,3 +234,19 @@ Did you mean this?
 #38 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
 #39 {main}
 "} 
+[2026-09-22 14:25:29] local.ERROR: The "--no" option does not exist. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\RuntimeException(code: 0): The \"--no\" option does not exist. at C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Input/ArgvInput.php:226)
+[stacktrace]
+#0 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Input/ArgvInput.php(155): Symfony/Component/Console/Input/ArgvInput->addLongOption('no', NULL)
+#1 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Input/ArgvInput.php(88): Symfony/Component/Console/Input/ArgvInput->parseLongOption('--no')
+#2 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Input/ArgvInput.php(77): Symfony/Component/Console/Input/ArgvInput->parseToken('--no', true)
+#3 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Input/Input.php(53): Symfony/Component/Console/Input/ArgvInput->parse()
+#4 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Command/Command.php(295): Symfony/Component/Console/Input/Input->bind(Object(Symfony/Component/Console/Input/InputDefinition))
+#5 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#6 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#7 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Foundation/Console/ServeCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#8 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#9 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#10 C:/Users/hp/Desktop/proj-tracker/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#11 C:/Users/hp/Desktop/proj-tracker/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#12 {main}
+"} 
