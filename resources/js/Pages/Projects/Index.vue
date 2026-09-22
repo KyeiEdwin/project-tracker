@@ -3,75 +3,23 @@ import { ref, computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
+const props = defineProps({
+  projects: {
+    type: Array,
+    default: () => []
+  }
+})
+
 const searchQuery = ref('')
 const statusFilter = ref('all')
-const projects = ref([
-  {
-    id: 1,
-    name: 'Website Redesign',
-    description: 'Complete redesign of corporate website',
-    team: 'Marketing Team',
-    status: 'in-progress',
-    progress: 75,
-    priority: 'high',
-    dueDate: '2024-12-15',
-    budget: 50000,
-    spent: 35000
-  },
-  {
-    id: 2,
-    name: 'Mobile App Development',
-    description: 'Native iOS and Android app development',
-    team: 'Development Team',
-    status: 'on-hold',
-    progress: 45,
-    priority: 'medium',
-    dueDate: '2024-12-20',
-    budget: 120000,
-    spent: 54000
-  },
-  {
-    id: 3,
-    name: 'CRM Integration',
-    description: 'Integrate Salesforce with internal systems',
-    team: 'IT Team',
-    status: 'completed',
-    progress: 100,
-    priority: 'low',
-    dueDate: '2024-11-30',
-    budget: 30000,
-    spent: 28500
-  },
-  {
-    id: 4,
-    name: 'Data Migration',
-    description: 'Migrate legacy data to new cloud platform',
-    team: 'Database Team',
-    status: 'in-progress',
-    progress: 60,
-    priority: 'high',
-    dueDate: '2024-12-10',
-    budget: 75000,
-    spent: 45000
-  },
-  {
-    id: 5,
-    name: 'Security Audit',
-    description: 'Annual security assessment and compliance review',
-    team: 'Security Team',
-    status: 'planning',
-    progress: 10,
-    priority: 'high',
-    dueDate: '2024-12-25',
-    budget: 25000,
-    spent: 2500
-  }
-])
+const projects = computed(() => props.projects)
 
 const filteredProjects = computed(() => {
   return projects.value.filter(project => {
-    const matchesSearch = project.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                         project.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+    const name = (project.name || '').toLowerCase()
+    const description = (project.description || '').toLowerCase()
+    const query = searchQuery.value.toLowerCase()
+    const matchesSearch = name.includes(query) || description.includes(query)
     const matchesStatus = statusFilter.value === 'all' || project.status === statusFilter.value
     return matchesSearch && matchesStatus
   })
@@ -97,6 +45,9 @@ const getPriorityClass = (priority) => {
 }
 
 const formatDate = (dateStr) => {
+  if (!dateStr) {
+    return '—'
+  }
   return new Date(dateStr).toLocaleDateString('en-US', { 
     month: 'short', 
     day: 'numeric', 
@@ -164,6 +115,11 @@ const formatCurrency = (amount) => {
               </tr>
             </thead>
             <tbody>
+              <tr v-if="filteredProjects.length === 0">
+                <td colspan="8" class="text-center py-8 text-textmuted">
+                  No projects found. Create one to get started.
+                </td>
+              </tr>
               <tr v-for="project in filteredProjects" :key="project.id">
                 <td>
                   <input type="checkbox" class="ti-form-check-input">
@@ -177,13 +133,13 @@ const formatCurrency = (amount) => {
                       <Link :href="`/projects/${project.id}`" class="font-medium text-defaulttextcolor hover:text-primary">
                         {{ project.name }}
                       </Link>
-                      <p class="text-textmuted text-xs mb-0">{{ project.team }}</p>
+                      <p class="text-textmuted text-xs mb-0">{{ project.team || 'Unassigned' }}</p>
                     </div>
                   </div>
                 </td>
                 <td>
                   <span class="badge" :class="getStatusClass(project.status)">
-                    {{ project.status.replace('-', ' ') }}
+                    {{ (project.status || '').replace('-', ' ') }}
                   </span>
                 </td>
                 <td>

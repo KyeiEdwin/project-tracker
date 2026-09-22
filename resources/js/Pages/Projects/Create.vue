@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import { router, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
-const form = ref({
+const form = useForm({
   projectType: '',
   name: '',
   description: '',
@@ -29,7 +29,7 @@ const form = ref({
 })
 
 const handleSubmit = () => {
-  router.post('/projects', form.value)
+  form.post('/projects')
 }
 
 const handleCancel = () => {
@@ -37,12 +37,9 @@ const handleCancel = () => {
 }
 
 // Computed property to check if project type is selected
-const isProjectTypeSelected = computed(() => form.value.projectType !== '')
-
-// Computed properties for showing/hiding fields based on project type
-const showPredictiveFields = computed(() => form.value.projectType === 'predictive')
-const showAgileFields = computed(() => form.value.projectType === 'agile')
-const showHybridFields = computed(() => form.value.projectType === 'hybrid')
+const showPredictiveFields = computed(() => form.projectType === 'predictive')
+const showAgileFields = computed(() => form.projectType === 'agile')
+const showHybridFields = computed(() => form.projectType === 'hybrid')
 </script>
 
 <template>
@@ -50,7 +47,7 @@ const showHybridFields = computed(() => form.value.projectType === 'hybrid')
     <PageHeader title="Create New Project" subtitle="Add a new project to your portfolio">
       <template #actions>
         <button @click="handleCancel" class="ti-btn ti-btn-light">Cancel</button>
-        <button @click="handleSubmit" class="ti-btn ti-btn-primary">
+        <button @click="handleSubmit" class="ti-btn ti-btn-primary" :disabled="form.processing">
           <i class="ri-save-line me-1"></i> Save Project
         </button>
       </template>
@@ -78,6 +75,7 @@ const showHybridFields = computed(() => form.value.projectType === 'hybrid')
               <div class="col-span-12">
                 <label class="ti-form-label">Project Name *</label>
                 <input v-model="form.name" type="text" class="ti-form-control" placeholder="Enter project name">
+                <p v-if="form.errors.name" class="text-xs text-danger mt-1">{{ form.errors.name }}</p>
               </div>
               <div class="col-span-12">
                 <label class="ti-form-label">Description</label>

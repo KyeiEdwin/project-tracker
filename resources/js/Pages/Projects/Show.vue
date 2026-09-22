@@ -1,35 +1,20 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
 const props = defineProps({
-  id: {
-    type: [String, Number],
-    default: 1
+  project: {
+    type: Object,
+    required: true
   }
 })
 
-const projectId = props.id || 1
-
-const project = ref({
-  id: projectId,
-  name: 'Website Redesign',
-  description: 'Complete redesign of the corporate website with modern UI/UX',
-  status: 'in-progress',
-  progress: 75,
-  priority: 'high',
-  startDate: '2024-10-01',
-  endDate: '2024-12-15',
-  budget: 50000,
-  spent: 35000,
-  team: 'Marketing Team',
-  client: 'Acme Corp',
-  projectType: 'agile'
-})
+const projectId = computed(() => props.project.id)
+const project = computed(() => props.project)
 
 const navigateToStakeholders = () => {
-  router.visit(`/initiation/stakeholders?projectId=${projectId}`)
+  router.visit(`/initiation/stakeholders?projectId=${projectId.value}`)
 }
 
 const tasks = ref([
