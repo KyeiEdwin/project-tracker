@@ -1,19 +1,10 @@
 <script setup>
-import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const tasks = ref([
-  { id: 1, name: 'Project Planning', start: 0, duration: 2, progress: 100, color: 'bg-success' },
-  { id: 2, name: 'Requirements Gathering', start: 1, duration: 3, progress: 100, color: 'bg-success' },
-  { id: 3, name: 'UI/UX Design', start: 3, duration: 4, progress: 80, color: 'bg-primary' },
-  { id: 4, name: 'Frontend Development', start: 5, duration: 6, progress: 45, color: 'bg-primary' },
-  { id: 5, name: 'Backend Development', start: 5, duration: 7, progress: 60, color: 'bg-primary' },
-  { id: 6, name: 'Integration', start: 10, duration: 2, progress: 0, color: 'bg-secondary' },
-  { id: 7, name: 'Testing', start: 11, duration: 3, progress: 0, color: 'bg-secondary' },
-  { id: 8, name: 'Deployment', start: 14, duration: 1, progress: 0, color: 'bg-secondary' }
-])
-
-const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8']
+defineProps({
+  tasks: { type: Array, default: () => [] },
+  weeks: { type: Array, default: () => ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'] },
+})
 </script>
 
 <template>

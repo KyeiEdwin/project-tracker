@@ -1,14 +1,15 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { router, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const stakeholders = ref([
-  { id: 1, name: 'John Smith', role: 'Project Sponsor', department: 'Executive', influence: 'high', interest: 'high' },
-  { id: 2, name: 'Sarah Johnson', role: 'Product Owner', department: 'Product', influence: 'high', interest: 'high' },
-  { id: 3, name: 'Mike Williams', role: 'Technical Lead', department: 'Engineering', influence: 'medium', interest: 'high' },
-  { id: 4, name: 'Emily Davis', role: 'QA Manager', department: 'Quality', influence: 'medium', interest: 'medium' },
-  { id: 5, name: 'David Brown', role: 'End User Rep', department: 'Operations', influence: 'low', interest: 'high' }
-])
+const props = defineProps({
+  stakeholders: { type: Array, default: () => [] },
+  projects: { type: Array, default: () => [] },
+})
+
+const stakeholders = ref([...props.stakeholders])
+watch(() => props.stakeholders, (value) => { stakeholders.value = [...value] })
 
 const getInfluenceClass = (level) => ({
   'high': 'bg-danger/10 text-danger',
@@ -18,13 +19,7 @@ const getInfluenceClass = (level) => ({
 
 // Add Stakeholder modal state
 const showAddModal = ref(false)
-const newStakeholder = ref({
-  name: '',
-  role: '',
-  department: '',
-  influence: 'medium',
-  interest: 'medium'
-})
+const newStakeholder = useForm({ project_id: '', name: '', email: '', role: '', department: '', influence: 'medium', interest: 'medium' })
 
 const openAddModal = () => {
   showAddModal.value = true
@@ -32,30 +27,17 @@ const openAddModal = () => {
 
 const closeAddModal = () => {
   showAddModal.value = false
-  newStakeholder.value = {
-    name: '',
-    role: '',
-    department: '',
-    influence: 'medium',
-    interest: 'medium'
-  }
+  newStakeholder.reset()
+  newStakeholder.influence = 'medium'
+  newStakeholder.interest = 'medium'
 }
 
 const saveStakeholder = () => {
-  if (!newStakeholder.value.name.trim() || !newStakeholder.value.role.trim()) return
+  newStakeholder.post('/stakeholders', { preserveScroll: true, onSuccess: closeAddModal })
+}
 
-  const nextId = stakeholders.value.length ? Math.max(...stakeholders.value.map(s => s.id)) + 1 : 1
-
-  stakeholders.value.push({
-    id: nextId,
-    name: newStakeholder.value.name.trim(),
-    role: newStakeholder.value.role.trim(),
-    department: newStakeholder.value.department.trim() || 'N/A',
-    influence: newStakeholder.value.influence,
-    interest: newStakeholder.value.interest
-  })
-
-  closeAddModal()
+const deleteStakeholder = (stakeholder) => {
+  if (window.confirm(`Remove ${stakeholder.name}?`)) router.delete(`/stakeholders/${stakeholder.id}`, { preserveScroll: true })
 }
 </script>
 
@@ -98,6 +80,7 @@ const saveStakeholder = () => {
                     <div class="flex gap-1">
                       <button class="ti-btn ti-btn-soft-primary ti-btn-icon ti-btn-sm"><i class="ri-eye-line"></i></button>
                       <button class="ti-btn ti-btn-soft-info ti-btn-icon ti-btn-sm"><i class="ri-edit-line"></i></button>
+                      <button class="ti-btn ti-btn-soft-danger ti-btn-icon ti-btn-sm" @click="deleteStakeholder(stakeholder)"><i class="ri-delete-bin-line"></i></button>
                     </div>
                   </td>
                 </tr>
@@ -155,6 +138,11 @@ const saveStakeholder = () => {
 
         <div class="px-6 py-5 space-y-4">
           <div>
+            <label class="ti-form-label text-sm mb-1">Project <span class="text-danger">*</span></label>
+            <select v-model="newStakeholder.project_id" class="ti-form-select"><option value="">Select project</option><option v-for="project in projects" :key="project.id" :value="project.id">{{ project.name }}</option></select>
+            <p v-if="newStakeholder.errors.project_id" class="text-xs text-danger mt-1">{{ newStakeholder.errors.project_id }}</p>
+          </div>
+          <div>
             <label class="ti-form-label text-sm mb-1">Name <span class="text-danger">*</span></label>
             <input 
               v-model="newStakeholder.name"
@@ -172,6 +160,7 @@ const saveStakeholder = () => {
               class="ti-form-control"
               placeholder="e.g. Project Sponsor, Product Owner"
             >
+            <p v-if="newStakeholder.errors.name || newStakeholder.errors.role" class="text-xs text-danger mt-1">{{ newStakeholder.errors.name || newStakeholder.errors.role }}</p>
           </div>
 
           <div>
@@ -203,7 +192,7 @@ const saveStakeholder = () => {
             </div>
           </div>
 
-          <p v-if="!newStakeholder.name.trim() || !newStakeholder.role.trim()" class="text-xs text-warning mt-1">
+          <p v-if="!newStakeholder.project_id || !newStakeholder.name.trim() || !newStakeholder.role.trim()" class="text-xs text-warning mt-1">
             Enter at least a name and role to enable save.
           </p>
         </div>
@@ -215,7 +204,7 @@ const saveStakeholder = () => {
           <button
             class="ti-btn ti-btn-primary"
             type="button"
-            :disabled="!newStakeholder.name.trim() || !newStakeholder.role.trim()"
+            :disabled="newStakeholder.processing || !newStakeholder.project_id || !newStakeholder.name.trim() || !newStakeholder.role.trim()"
             @click="saveStakeholder"
           >
             Save Stakeholder

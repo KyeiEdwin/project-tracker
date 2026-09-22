@@ -1,20 +1,12 @@
 <script setup>
-import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const testCases = ref([
-  { id: 1, name: 'Login functionality', type: 'functional', status: 'passed', priority: 'high', lastRun: '2024-12-03' },
-  { id: 2, name: 'Form validation', type: 'functional', status: 'passed', priority: 'medium', lastRun: '2024-12-03' },
-  { id: 3, name: 'API response times', type: 'performance', status: 'failed', priority: 'high', lastRun: '2024-12-02' },
-  { id: 4, name: 'Mobile responsiveness', type: 'ui', status: 'passed', priority: 'medium', lastRun: '2024-12-02' },
-  { id: 5, name: 'Cross-browser compatibility', type: 'ui', status: 'pending', priority: 'low', lastRun: '-' }
-])
-
-const stats = ref({
-  total: 45,
-  passed: 38,
-  failed: 4,
-  pending: 3
+defineProps({
+  testCases: { type: Array, default: () => [] },
+  stats: {
+    type: Object,
+    default: () => ({ total: 0, passed: 0, failed: 0, pending: 0 }),
+  },
 })
 </script>
 

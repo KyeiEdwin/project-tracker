@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
 const props = defineProps({
@@ -57,6 +57,12 @@ const formatDate = (dateStr) => {
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
+}
+
+const deleteProject = (project) => {
+  if (window.confirm(`Archive ${project.name}?`)) {
+    router.delete(`/projects/${project.id}`, { preserveScroll: true })
+  }
 }
 </script>
 
@@ -167,10 +173,10 @@ const formatCurrency = (amount) => {
                     <Link :href="`/projects/${project.id}`" class="ti-btn ti-btn-soft-primary ti-btn-icon ti-btn-sm">
                       <i class="ri-eye-line"></i>
                     </Link>
-                    <button class="ti-btn ti-btn-soft-info ti-btn-icon ti-btn-sm">
+                    <Link :href="`/projects/${project.id}/edit`" class="ti-btn ti-btn-soft-info ti-btn-icon ti-btn-sm">
                       <i class="ri-edit-line"></i>
-                    </button>
-                    <button class="ti-btn ti-btn-soft-danger ti-btn-icon ti-btn-sm">
+                    </Link>
+                    <button class="ti-btn ti-btn-soft-danger ti-btn-icon ti-btn-sm" :disabled="false" @click="deleteProject(project)">
                       <i class="ri-delete-bin-line"></i>
                     </button>
                   </div>

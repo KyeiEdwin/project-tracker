@@ -2,13 +2,9 @@
 import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const lessons = ref([
-  { id: 1, title: 'Early stakeholder involvement improves outcomes', category: 'process', project: 'Website Redesign', impact: 'positive', date: '2024-11-30' },
-  { id: 2, title: 'Underestimated API integration complexity', category: 'technical', project: 'CRM Integration', impact: 'negative', date: '2024-11-25' },
-  { id: 3, title: 'Daily standups improved team communication', category: 'team', project: 'Mobile App', impact: 'positive', date: '2024-11-20' },
-  { id: 4, title: 'Scope changes without impact analysis caused delays', category: 'scope', project: 'Data Migration', impact: 'negative', date: '2024-11-15' },
-  { id: 5, title: 'Automated testing reduced bug count by 60%', category: 'quality', project: 'Website Redesign', impact: 'positive', date: '2024-11-10' }
-])
+defineProps({
+  lessons: { type: Array, default: () => [] },
+})
 
 const newLesson = ref({ title: '', category: '', description: '' })
 </script>

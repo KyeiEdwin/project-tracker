@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use Inertia\Response;
 
 class InitiationController extends Controller
 {
     public function kickoff(): Response
     {
-        return Inertia::render('Initiation/Kickoff');
+        return app(KickoffController::class)->index();
     }
 
     public function stakeholders(): Response
     {
-        return Inertia::render('Initiation/Stakeholders');
+        return app(StakeholderController::class)->index();
     }
 }

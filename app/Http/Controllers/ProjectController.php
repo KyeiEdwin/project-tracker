@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -12,14 +13,14 @@ class ProjectController extends Controller
 {
     public function index(): Response
     {
-        $projects = Project::query()
-            ->latest()
-            ->get()
-            ->map(fn (Project $project) => $project->toInertia())
-            ->values();
+        $page = $this->inertiaPage(
+            Project::query()->latest(),
+            fn (Project $project) => $project->toInertia()
+        );
 
         return Inertia::render('Projects/Index', [
-            'projects' => $projects,
+            'projects' => $page['data'],
+            'pagination' => $page['pagination'],
         ]);
     }
 
@@ -28,61 +29,9 @@ class ProjectController extends Controller
         return Inertia::render('Projects/Create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'priority' => 'required|string|in:low,medium,high,critical',
-            'status' => 'required|string|in:planning,in-progress,on-hold,completed',
-            'dueDate' => 'nullable|date',
-            'endDate' => 'nullable|date',
-            'startDate' => 'nullable|date',
-            'budget' => 'nullable|numeric',
-            'projectType' => 'nullable|string|max:32',
-            'team' => 'nullable|string|max:255',
-            'client' => 'nullable|string|max:255',
-            'phases' => 'nullable',
-            'milestones' => 'nullable|string',
-            'deliverables' => 'nullable|string',
-            'sprintDuration' => 'nullable|string',
-            'sprintGoal' => 'nullable|string',
-            'velocity' => 'nullable',
-            'methodology' => 'nullable|string',
-            'sprintLength' => 'nullable|string',
-            'phaseCount' => 'nullable',
-        ]);
-
-        $teamLabels = [
-            'development' => 'Development Team',
-            'marketing' => 'Marketing Team',
-            'design' => 'Design Team',
-            'qa' => 'QA Team',
-        ];
-
-        $project = Project::query()->create([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'priority' => $validated['priority'],
-            'status' => $validated['status'],
-            'start_date' => $validated['startDate'] ?? null,
-            'due_date' => $validated['endDate'] ?? $validated['dueDate'] ?? null,
-            'budget' => $validated['budget'] ?? null,
-            'project_type' => $validated['projectType'] ?? null,
-            'team' => $teamLabels[$validated['team'] ?? ''] ?? ($validated['team'] ?? null),
-            'client' => $validated['client'] ?? null,
-            'settings' => [
-                'phases' => $validated['phases'] ?? null,
-                'milestones' => $validated['milestones'] ?? null,
-                'deliverables' => $validated['deliverables'] ?? null,
-                'sprintDuration' => $validated['sprintDuration'] ?? null,
-                'sprintGoal' => $validated['sprintGoal'] ?? null,
-                'velocity' => $validated['velocity'] ?? null,
-                'methodology' => $validated['methodology'] ?? null,
-                'sprintLength' => $validated['sprintLength'] ?? null,
-                'phaseCount' => $validated['phaseCount'] ?? null,
-            ],
-        ]);
+        $project = Project::query()->create($this->payload($request->validated()));
 
         return redirect()
             ->route('projects.show', $project)
@@ -91,8 +40,76 @@ class ProjectController extends Controller
 
     public function show(Project $project): Response
     {
+        $project->load(['tasks.assignee', 'milestones', 'risks']);
+
         return Inertia::render('Projects/Show', [
             'project' => $project->toInertia(),
+            'tasks' => $project->tasks->map->toInertia()->values(),
+            'milestones' => $project->milestones->map->toInertia()->values(),
+            'risks' => $project->risks->map->toInertia()->values(),
         ]);
+    }
+
+    public function edit(Project $project): Response
+    {
+        return Inertia::render('Projects/Create', [
+            'project' => $project->toInertia(),
+            'formMode' => 'edit',
+        ]);
+    }
+
+    public function update(UpdateProjectRequest $request, Project $project): RedirectResponse
+    {
+        $project->update($this->payload($request->validated(), $project));
+
+        return redirect()
+            ->route('projects.show', $project)
+            ->with('success', 'Project updated successfully.');
+    }
+
+    public function destroy(Project $project): RedirectResponse
+    {
+        $project->delete();
+
+        return redirect()
+            ->route('projects.index')
+            ->with('success', 'Project archived.');
+    }
+
+    /**
+     * @param  array<string, mixed>  $validated
+     * @return array<string, mixed>
+     */
+    private function payload(array $validated, ?Project $existing = null): array
+    {
+        $teamLabels = [
+            'development' => 'Development Team',
+            'marketing' => 'Marketing Team',
+            'design' => 'Design Team',
+            'qa' => 'QA Team',
+        ];
+
+        $settings = $existing?->settings ?? [];
+        foreach (['phases', 'milestones', 'deliverables', 'sprint_duration', 'sprint_goal', 'velocity', 'methodology', 'sprint_length', 'phase_count'] as $key) {
+            if (array_key_exists($key, $validated)) {
+                $settings[$key] = $validated[$key];
+            }
+        }
+
+        return [
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? $existing?->description,
+            'priority' => $validated['priority'],
+            'status' => $validated['status'],
+            'start_date' => $validated['start_date'] ?? $existing?->start_date,
+            'due_date' => $validated['end_date'] ?? $validated['due_date'] ?? $existing?->due_date,
+            'budget' => $validated['budget'] ?? $existing?->budget,
+            'spent' => $validated['spent'] ?? $existing?->spent,
+            'progress' => $validated['progress'] ?? $existing?->progress ?? 0,
+            'project_type' => $validated['project_type'] ?? $existing?->project_type,
+            'team' => $teamLabels[$validated['team'] ?? ''] ?? ($validated['team'] ?? $existing?->team),
+            'client' => $validated['client'] ?? $existing?->client,
+            'settings' => $settings,
+        ];
     }
 }

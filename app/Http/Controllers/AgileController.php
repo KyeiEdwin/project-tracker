@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use Inertia\Response;
 
 class AgileController extends Controller
 {
     public function sprints(): Response
     {
-        return Inertia::render('Agile/Sprints');
+        return app(SprintController::class)->index();
     }
 
     public function backlog(): Response
     {
-        return Inertia::render('Agile/Backlog');
+        return app(BacklogItemController::class)->index();
     }
 
     public function definitions(): Response
     {
-        return Inertia::render('Agile/Definitions');
+        return app(AgileDefinitionController::class)->index();
     }
 }

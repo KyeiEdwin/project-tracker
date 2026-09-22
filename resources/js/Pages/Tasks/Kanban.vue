@@ -1,45 +1,17 @@
 <script setup>
-import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const columns = ref([
-  {
-    id: 'backlog',
-    title: 'Backlog',
-    color: 'secondary',
-    tasks: [
-      { id: 1, title: 'Research competitors', assignee: 'John Doe', priority: 'low' },
-      { id: 2, title: 'Define requirements', assignee: 'Jane Smith', priority: 'medium' }
-    ]
+defineProps({
+  columns: {
+    type: Array,
+    default: () => [
+      { id: 'backlog', title: 'Backlog', color: 'secondary', tasks: [] },
+      { id: 'todo', title: 'To Do', color: 'warning', tasks: [] },
+      { id: 'in-progress', title: 'In Progress', color: 'primary', tasks: [] },
+      { id: 'done', title: 'Done', color: 'success', tasks: [] },
+    ],
   },
-  {
-    id: 'todo',
-    title: 'To Do',
-    color: 'warning',
-    tasks: [
-      { id: 3, title: 'Design wireframes', assignee: 'Mike Johnson', priority: 'high' },
-      { id: 4, title: 'Setup project structure', assignee: 'Sarah Wilson', priority: 'medium' }
-    ]
-  },
-  {
-    id: 'in-progress',
-    title: 'In Progress',
-    color: 'primary',
-    tasks: [
-      { id: 5, title: 'Implement authentication', assignee: 'John Doe', priority: 'high' },
-      { id: 6, title: 'Build dashboard UI', assignee: 'Jane Smith', priority: 'medium' }
-    ]
-  },
-  {
-    id: 'done',
-    title: 'Done',
-    color: 'success',
-    tasks: [
-      { id: 7, title: 'Project kickoff meeting', assignee: 'Mike Johnson', priority: 'high' },
-      { id: 8, title: 'Environment setup', assignee: 'Sarah Wilson', priority: 'low' }
-    ]
-  }
-])
+})
 
 const getPriorityClass = (priority) => ({
   'high': 'bg-danger/10 text-danger',

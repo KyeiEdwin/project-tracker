@@ -1,28 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { router, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const kickoffs = ref([
-  { id: 1, project: 'Website Redesign', date: '2024-10-01', attendees: 12, status: 'completed' },
-  { id: 2, project: 'Mobile App Development', date: '2024-10-15', attendees: 8, status: 'completed' },
-  { id: 3, project: 'Data Migration', date: '2024-11-01', attendees: 6, status: 'scheduled' }
-])
+const props = defineProps({
+  kickoffs: { type: Array, default: () => [] },
+  objectives: { type: Array, default: () => [] },
+  projects: { type: Array, default: () => [] },
+})
 
-const objectives = ref([
-  { id: 1, text: 'Define project scope and deliverables', completed: true },
-  { id: 2, text: 'Identify key stakeholders and roles', completed: true },
-  { id: 3, text: 'Establish communication channels', completed: false },
-  { id: 4, text: 'Set up project timeline and milestones', completed: false }
-])
+const kickoffs = ref([...props.kickoffs])
+const objectives = ref([...props.objectives])
+
+watch(() => props.kickoffs, (value) => { kickoffs.value = [...value] })
+watch(() => props.objectives, (value) => { objectives.value = [...value] })
 
 // Schedule Kick-Off modal state
 const showScheduleModal = ref(false)
-const newKickoff = ref({
-  project: '',
-  date: '',
-  attendees: 5,
-  status: 'scheduled'
-})
+const newKickoff = useForm({ project_id: '', scheduled_on: '', attendees_count: 5, status: 'scheduled' })
 
 const openScheduleModal = () => {
   showScheduleModal.value = true
@@ -30,28 +25,16 @@ const openScheduleModal = () => {
 
 const closeScheduleModal = () => {
   showScheduleModal.value = false
-  newKickoff.value = {
-    project: '',
-    date: '',
-    attendees: 5,
-    status: 'scheduled'
-  }
+  newKickoff.reset()
+  newKickoff.status = 'scheduled'
 }
 
 const saveKickoff = () => {
-  if (!newKickoff.value.project.trim() || !newKickoff.value.date) return
+  newKickoff.post('/kickoffs', { preserveScroll: true, onSuccess: closeScheduleModal })
+}
 
-  const nextId = kickoffs.value.length ? Math.max(...kickoffs.value.map(k => k.id)) + 1 : 1
-
-  kickoffs.value.push({
-    id: nextId,
-    project: newKickoff.value.project.trim(),
-    date: newKickoff.value.date,
-    attendees: Number(newKickoff.value.attendees) || 0,
-    status: newKickoff.value.status
-  })
-
-  closeScheduleModal()
+const deleteKickoff = (kickoff) => {
+  if (window.confirm(`Delete the kick-off for ${kickoff.project}?`)) router.delete(`/kickoffs/${kickoff.id}`, { preserveScroll: true })
 }
 </script>
 
@@ -96,7 +79,9 @@ const saveKickoff = () => {
                     </span>
                   </td>
                   <td>
-                    <button class="ti-btn ti-btn-soft-primary ti-btn-sm">View Details</button>
+                    <div class="flex gap-1">
+                      <button class="ti-btn ti-btn-soft-danger ti-btn-sm" @click="deleteKickoff(kickoff)">Delete</button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -141,20 +126,16 @@ const saveKickoff = () => {
 
         <div class="px-6 py-5 space-y-4">
           <div>
-            <label class="ti-form-label text-sm mb-1">Project Name <span class="text-danger">*</span></label>
-            <input
-              v-model="newKickoff.project"
-              type="text"
-              class="ti-form-control"
-              placeholder="Enter project name"
-            >
+            <label class="ti-form-label text-sm mb-1">Project <span class="text-danger">*</span></label>
+            <select v-model="newKickoff.project_id" class="ti-form-select"><option value="">Select project</option><option v-for="project in projects" :key="project.id" :value="project.id">{{ project.name }}</option></select>
+            <p v-if="newKickoff.errors.project_id" class="text-xs text-danger mt-1">{{ newKickoff.errors.project_id }}</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="ti-form-label text-sm mb-1">Kick-Off Date <span class="text-danger">*</span></label>
               <input
-                v-model="newKickoff.date"
+              v-model="newKickoff.scheduled_on"
                 type="date"
                 class="ti-form-control"
               >
@@ -162,7 +143,7 @@ const saveKickoff = () => {
             <div>
               <label class="ti-form-label text-sm mb-1">Expected Attendees</label>
               <input
-                v-model="newKickoff.attendees"
+              v-model="newKickoff.attendees_count"
                 type="number"
                 min="1"
                 class="ti-form-control"
@@ -178,7 +159,7 @@ const saveKickoff = () => {
             </select>
           </div>
 
-          <p v-if="!newKickoff.project.trim() || !newKickoff.date" class="text-xs text-warning mt-1">
+          <p v-if="!newKickoff.project_id || !newKickoff.scheduled_on" class="text-xs text-warning mt-1">
             Enter a project name and date to enable save.
           </p>
         </div>
@@ -190,7 +171,7 @@ const saveKickoff = () => {
           <button
             class="ti-btn ti-btn-primary"
             type="button"
-            :disabled="!newKickoff.project.trim() || !newKickoff.date"
+            :disabled="newKickoff.processing || !newKickoff.project_id || !newKickoff.scheduled_on"
             @click="saveKickoff"
           >
             Save Kick-Off

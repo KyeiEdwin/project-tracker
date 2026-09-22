@@ -3,17 +3,19 @@ import { computed } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
+const props = defineProps({ project: { type: Object, default: null }, formMode: { type: String, default: 'create' } })
+
 const form = useForm({
-  projectType: '',
-  name: '',
-  description: '',
-  startDate: '',
-  endDate: '',
-  budget: '',
-  priority: 'medium',
-  status: 'planning',
-  team: '',
-  client: '',
+  projectType: props.project?.projectType ?? '',
+  name: props.project?.name ?? '',
+  description: props.project?.description ?? '',
+  startDate: props.project?.startDate ?? '',
+  endDate: props.project?.endDate ?? '',
+  budget: props.project?.budget ?? '',
+  priority: props.project?.priority ?? 'medium',
+  status: props.project?.status ?? 'planning',
+  team: props.project?.team ?? '',
+  client: props.project?.client ?? '',
   // Predictive fields
   phases: '',
   milestones: '',
@@ -29,6 +31,11 @@ const form = useForm({
 })
 
 const handleSubmit = () => {
+  if (props.formMode === 'edit' && props.project) {
+    form.put(`/projects/${props.project.id}`)
+    return
+  }
+
   form.post('/projects')
 }
 
@@ -44,7 +51,7 @@ const showHybridFields = computed(() => form.projectType === 'hybrid')
 
 <template>
   <div>
-    <PageHeader title="Create New Project" subtitle="Add a new project to your portfolio">
+    <PageHeader :title="formMode === 'edit' ? 'Edit Project' : 'Create New Project'" subtitle="Add a new project to your portfolio">
       <template #actions>
         <button @click="handleCancel" class="ti-btn ti-btn-light">Cancel</button>
         <button @click="handleSubmit" class="ti-btn ti-btn-primary" :disabled="form.processing">

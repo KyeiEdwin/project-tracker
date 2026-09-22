@@ -84,6 +84,12 @@ const menuItems = [
     ]
   },
   {
+    id: 'charts',
+    label: 'Charts',
+    icon: 'ri-pie-chart-line',
+    to: '/charts'
+  },
+  {
     id: 'chat',
     label: 'Chat',
     icon: 'ri-chat-3-line',

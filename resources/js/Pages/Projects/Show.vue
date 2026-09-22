@@ -7,6 +7,10 @@ const props = defineProps({
   project: {
     type: Object,
     required: true
+  },
+  tasks: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -17,12 +21,7 @@ const navigateToStakeholders = () => {
   router.visit(`/initiation/stakeholders?projectId=${projectId.value}`)
 }
 
-const tasks = ref([
-  { id: 1, title: 'Design mockups', status: 'completed', assignee: 'John Doe' },
-  { id: 2, title: 'Frontend development', status: 'in-progress', assignee: 'Jane Smith' },
-  { id: 3, title: 'Backend API', status: 'in-progress', assignee: 'Mike Johnson' },
-  { id: 4, title: 'Testing', status: 'pending', assignee: 'Sarah Wilson' }
-])
+const tasks = ref([...props.tasks])
 
 const activeTab = ref('overview')
 

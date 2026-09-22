@@ -2,13 +2,9 @@
 import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const documents = ref([
-  { id: 1, name: 'Project Charter.pdf', type: 'pdf', size: '2.4 MB', project: 'Website Redesign', uploadedBy: 'John Doe', date: '2024-11-15' },
-  { id: 2, name: 'Technical Specs.docx', type: 'doc', size: '1.8 MB', project: 'Mobile App', uploadedBy: 'Jane Smith', date: '2024-11-20' },
-  { id: 3, name: 'UI Mockups.figma', type: 'design', size: '15.2 MB', project: 'Website Redesign', uploadedBy: 'Mike Johnson', date: '2024-11-25' },
-  { id: 4, name: 'Budget Report.xlsx', type: 'excel', size: '890 KB', project: 'Data Migration', uploadedBy: 'Sarah Wilson', date: '2024-11-28' },
-  { id: 5, name: 'Meeting Notes.pdf', type: 'pdf', size: '456 KB', project: 'CRM Integration', uploadedBy: 'David Brown', date: '2024-12-01' }
-])
+defineProps({
+  documents: { type: Array, default: () => [] },
+})
 
 const getFileIcon = (type) => ({
   'pdf': 'ri-file-pdf-line text-danger',

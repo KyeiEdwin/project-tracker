@@ -2,14 +2,9 @@
 import { ref } from 'vue'
 import PageHeader from '@/components/ui/PageHeader.vue'
 
-const reportTypes = ref([
-  { id: 1, name: 'Project Status Report', description: 'Overall project health and progress', icon: 'ri-bar-chart-line', color: 'primary' },
-  { id: 2, name: 'Sprint Report', description: 'Sprint velocity and burndown', icon: 'ri-speed-line', color: 'success' },
-  { id: 3, name: 'Resource Utilization', description: 'Team allocation and availability', icon: 'ri-user-line', color: 'info' },
-  { id: 4, name: 'Budget Report', description: 'Budget vs actual spending', icon: 'ri-money-dollar-circle-line', color: 'warning' },
-  { id: 5, name: 'Risk Report', description: 'Active risks and mitigation status', icon: 'ri-alert-line', color: 'danger' },
-  { id: 6, name: 'Time Tracking Report', description: 'Hours logged by project/task', icon: 'ri-time-line', color: 'secondary' }
-])
+defineProps({
+  reportTypes: { type: Array, default: () => [] },
+})
 
 const selectedReport = ref('')
 const dateRange = ref({ start: '', end: '' })

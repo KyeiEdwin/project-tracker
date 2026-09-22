@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Inertia\Inertia;
 use Inertia\Response;
 
 class QualityController extends Controller
 {
     public function qaTesting(): Response
     {
-        return Inertia::render('Quality/QaTesting');
+        return app(QaTestController::class)->index();
     }
 
     public function risks(): Response
     {
-        return Inertia::render('Quality/Risks');
+        return app(RiskController::class)->index();
     }
 
     public function changeLog(): Response
     {
-        return Inertia::render('Quality/ChangeLog');
+        return app(ChangeLogController::class)->index();
     }
 }
