@@ -1,62 +1,30 @@
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import AppHeader from '../Components/layout/AppHeader.vue'
 import AppSidebar from '../Components/layout/AppSidebar.vue'
 import AppFooter from '../Components/layout/AppFooter.vue'
+import ActionFeedback from '../Components/ui/ActionFeedback.vue'
 
 const page = usePage()
 const isDarkMode = ref(false)
-
-// Check if current route is an auth page (no layout needed)
-const isAuthPage = computed(() => {
-  return page.props.isAuthPage || false
-})
-
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value
-  document.documentElement.classList.toggle('dark', isDarkMode.value)
+const isSidebarOpen = ref(false)
+const isAuthPage = computed(() => page.props.isAuthPage || false)
+const toggleDarkMode = () => { isDarkMode.value = !isDarkMode.value; document.documentElement.classList.toggle('dark', isDarkMode.value) }
+const handleWorkspaceAction = (event) => {
+  const button = event.target.closest('button')
+  if (!button || button.disabled || button.dataset.feedbackHandled === 'true' || button.type === 'submit') return
+  const label = button.textContent.replace(/\s+/g, ' ').trim() || button.getAttribute('aria-label') || 'Action'
+  window.dispatchEvent(new CustomEvent('workspace-action', { detail: { message: `${label} is ready.` } }))
 }
-
-onMounted(() => {
-  // Set initial layout attributes
-  document.documentElement.setAttribute('data-nav-layout', 'horizontal')
-  document.documentElement.setAttribute('data-nav-style', 'menu-click')
-  document.documentElement.setAttribute('data-menu-styles', 'light')
-  document.documentElement.setAttribute('data-header-styles', 'light')
-  
-  // Initialize Preline for dropdowns after DOM is ready
-  nextTick(() => {
-    setTimeout(() => {
-      if (window.HSStaticMethods && window.HSStaticMethods.autoInit) {
-        window.HSStaticMethods.autoInit()
-      }
-    }, 200)
-  })
-})
 </script>
-
 <template>
-  <div class="page" :class="{ 'dark': isDarkMode }">
-    <!-- Main Layout -->
+  <div class="workspace-shell" :class="{ dark: isDarkMode }">
     <template v-if="!isAuthPage">
-      <AppHeader @toggle-dark="toggleDarkMode" />
-      <AppSidebar />
-      <div class="main-content app-content">
-        <div class="container-fluid">
-          <slot />
-        </div>
-      </div>
-      <AppFooter />
+      <AppSidebar :open="isSidebarOpen" @navigate="isSidebarOpen = false" />
+      <div v-if="isSidebarOpen" class="sidebar-scrim" @click="isSidebarOpen = false"></div>
+      <main class="workspace-main"><AppHeader @toggle-dark="toggleDarkMode" @toggle-sidebar="isSidebarOpen = !isSidebarOpen" /><div class="workspace-content" @click.capture="handleWorkspaceAction"><slot /></div><AppFooter /><ActionFeedback /></main>
     </template>
-    
-    <!-- Auth Layout (no header/sidebar) -->
-    <template v-else>
-      <slot />
-    </template>
+    <slot v-else />
   </div>
 </template>
-
-<style>
-/* Global app styles */
-</style>
