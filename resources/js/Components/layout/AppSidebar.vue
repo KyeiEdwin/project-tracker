@@ -2,6 +2,15 @@
 import { ref, computed } from 'vue'
 import { usePage, Link } from '@inertiajs/vue3'
 
+const props = defineProps({
+  isOpen: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['close'])
+
 const page = usePage()
 const openMenus = ref([])
 
@@ -102,13 +111,8 @@ const toggleMenu = (menuId) => {
   if (index > -1) {
     openMenus.value.splice(index, 1)
   } else {
-    // Close other menus first, then open this one
-    openMenus.value = [menuId]
+    openMenus.value.push(menuId)
   }
-}
-
-const closeMenus = () => {
-  openMenus.value = []
 }
 
 const isMenuOpen = (menuId) => {
@@ -122,88 +126,285 @@ const isActive = (path) => {
 const isChildActive = (children) => {
   return children?.some(child => page.url === child.to || page.url.startsWith(child.to + '/'))
 }
+
+const handleLinkClick = () => {
+  // Close sidebar on mobile when a link is clicked
+  emit('close')
+}
 </script>
 
 <template>
-  <aside class="app-sidebar sticky" id="sidebar">
-    <div class="container-xl">
-      <div class="main-sidebar" id="sidebar-scroll">
-        <nav class="main-menu-container nav nav-pills sub-open">
-          <!-- Slide Left Arrow -->
-          <div class="slide-left" id="slide-left">
-            <svg fill="#7b8191" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
-            </svg>
-          </div>
-          
-          <!-- Menu Items -->
-          <ul class="main-menu" style="display: flex; align-items: center; flex-wrap: wrap;">
-            <li 
-              v-for="item in menuItems" 
-              :key="item.id"
-              class="slide"
-              :class="{ 
-                'has-sub': item.children, 
-                'open': isMenuOpen(item.id) || isChildActive(item.children),
-                'active': isActive(item.to) || isChildActive(item.children)
-              }"
-              style="position: relative; display: block;"
-            >
-              <!-- Menu item with children (dropdown) -->
-              <template v-if="item.children">
-                <a 
-                  class="side-menu__item" 
-                  :class="{ 'active': isChildActive(item.children) }"
-                  href="javascript:void(0);"
-                  @click="toggleMenu(item.id)"
-                  style="display: flex; align-items: center;"
-                >
-                  <i :class="[item.icon, 'side-menu__icon']"></i>
-                  <span class="side-menu__label">{{ item.label }}</span>
-                  <i class="ri-arrow-down-s-line side-menu__angle"></i>
-                </a>
-                <ul 
-                  v-if="isMenuOpen(item.id)" 
-                  class="pm-dropdown-menu"
-                >
-                  <li v-for="child in item.children" :key="child.to">
-                    <Link 
-                      :href="child.to" 
-                      :class="{ 'active': isActive(child.to) }"
-                      @click="closeMenus"
-                    >
-                      {{ child.label }}
-                    </Link>
-                  </li>
-                </ul>
-              </template>
-              
-              <!-- Simple menu item (no children) -->
-              <template v-else>
-                <Link 
-                  :href="item.to" 
-                  class="side-menu__item"
-                  :class="{ 'active': isActive(item.to) }"
-                >
-                  <i :class="[item.icon, 'side-menu__icon']"></i>
-                  <span class="side-menu__label">{{ item.label }}</span>
-                </Link>
-              </template>
-            </li>
-          </ul>
-          
-          <!-- Slide Right Arrow -->
-          <div class="slide-right" id="slide-right">
-            <svg fill="#7b8191" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
-            </svg>
-          </div>
-        </nav>
-      </div>
+  <aside class="app-sidebar" :class="{ 'is-open': isOpen }">
+    <div class="sidebar-content">
+      <nav class="sidebar-nav">
+        <ul class="sidebar-menu">
+          <li 
+            v-for="item in menuItems" 
+            :key="item.id"
+            class="sidebar-item"
+            :class="{ 
+              'has-submenu': item.children, 
+              'submenu-open': isMenuOpen(item.id),
+              'active': isActive(item.to) || isChildActive(item.children)
+            }"
+          >
+            <!-- Menu item with children (dropdown) -->
+            <template v-if="item.children">
+              <button 
+                class="sidebar-link" 
+                :class="{ 'active': isChildActive(item.children) }"
+                @click="toggleMenu(item.id)"
+                type="button"
+              >
+                <i :class="[item.icon, 'sidebar-icon']"></i>
+                <span class="sidebar-label">{{ item.label }}</span>
+                <i class="ri-arrow-down-s-line sidebar-arrow" :class="{ 'rotated': isMenuOpen(item.id) }"></i>
+              </button>
+              <ul 
+                v-show="isMenuOpen(item.id)" 
+                class="sidebar-submenu"
+              >
+                <li v-for="child in item.children" :key="child.to" class="submenu-item">
+                  <Link 
+                    :href="child.to" 
+                    class="submenu-link"
+                    :class="{ 'active': isActive(child.to) }"
+                    @click="handleLinkClick"
+                  >
+                    <span class="submenu-bullet"></span>
+                    {{ child.label }}
+                  </Link>
+                </li>
+              </ul>
+            </template>
+            
+            <!-- Simple menu item (no children) -->
+            <template v-else>
+              <Link 
+                :href="item.to" 
+                class="sidebar-link"
+                :class="{ 'active': isActive(item.to) }"
+                @click="handleLinkClick"
+              >
+                <i :class="[item.icon, 'sidebar-icon']"></i>
+                <span class="sidebar-label">{{ item.label }}</span>
+              </Link>
+            </template>
+          </li>
+        </ul>
+      </nav>
     </div>
   </aside>
 </template>
 
 <style scoped>
-/* Scoped sidebar overrides if needed */
+.app-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 260px;
+  background-color: #fff;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 50;
+  overflow-y: auto;
+  padding-top: 64px; /* Header height */
+}
+
+.app-sidebar.is-open {
+  transform: translateX(0);
+}
+
+@media (min-width: 992px) {
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+}
+
+.dark .app-sidebar {
+  background-color: rgb(32, 41, 71);
+  border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-content {
+  padding: 1rem 0;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-item {
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-size: 0.9375rem;
+  position: relative;
+}
+
+.sidebar-link:hover {
+  background-color: rgba(var(--primary), 0.05);
+  color: rgb(var(--primary));
+}
+
+.sidebar-link.active {
+  background-color: rgba(var(--primary), 0.1);
+  color: rgb(var(--primary));
+  font-weight: 500;
+}
+
+.sidebar-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: rgb(var(--primary));
+}
+
+.sidebar-icon {
+  font-size: 1.25rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.sidebar-label {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.sidebar-arrow {
+  font-size: 1rem;
+  margin-left: auto;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.sidebar-submenu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.02);
+  max-height: 0;
+  overflow: hidden;
+  animation: slideDown 0.3s ease forwards;
+}
+
+@keyframes slideDown {
+  to {
+    max-height: 500px;
+  }
+}
+
+.dark .sidebar-submenu {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.submenu-item {
+  margin: 0;
+}
+
+.submenu-link {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 1.5rem 0.625rem 3.5rem;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.submenu-link:hover {
+  background-color: rgba(var(--primary), 0.05);
+  color: rgb(var(--primary));
+}
+
+.submenu-link.active {
+  color: rgb(var(--primary));
+  font-weight: 500;
+}
+
+.submenu-bullet {
+  position: absolute;
+  left: 2.25rem;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+  opacity: 0.5;
+}
+
+.submenu-link.active .submenu-bullet {
+  opacity: 1;
+  background-color: rgb(var(--primary));
+}
+
+/* Dark mode text colors */
+.dark .sidebar-link,
+.dark .submenu-link {
+  color: #a2a6b9;
+}
+
+.dark .sidebar-link:hover,
+.dark .submenu-link:hover {
+  color: #fff;
+}
+
+.dark .sidebar-link.active,
+.dark .submenu-link.active {
+  color: #fff;
+}
+
+/* Custom scrollbar */
+.app-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.dark .app-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.app-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark .app-sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
 </style>

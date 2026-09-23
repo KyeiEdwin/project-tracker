@@ -13,15 +13,27 @@ class RiskController extends Controller
 {
     public function index(): Response
     {
+        $projectId = request()->query('project_id');
+        
+        $query = Risk::query()->with('project')->latest();
+        
+        if ($projectId) {
+            $query->where('project_id', $projectId);
+        }
+        
         $page = $this->inertiaPage(
-            Risk::query()->with('project')->latest(),
+            $query,
             fn (Risk $risk) => $risk->toInertia()
         );
+
+        $currentProject = $projectId ? \App\Models\Project::find($projectId) : null;
 
         return Inertia::render('Quality/Risks', [
             'risks' => $page['data'],
             'pagination' => $page['pagination'],
             'projects' => $this->projectOptions(),
+            'currentProject' => $currentProject?->toInertia(),
+            'filters' => ['project_id' => $projectId],
         ]);
     }
 

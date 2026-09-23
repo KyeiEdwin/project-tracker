@@ -13,15 +13,29 @@ class TeamMemberController extends Controller
 {
     public function index(): Response
     {
+        $projectId = request()->query('project_id');
+        
+        $query = TeamMember::query()->with('projects')->latest();
+        
+        if ($projectId) {
+            $query->whereHas('projects', function ($q) use ($projectId) {
+                $q->where('projects.id', $projectId);
+            });
+        }
+        
         $page = $this->inertiaPage(
-            TeamMember::query()->with('projects')->latest(),
+            $query,
             fn (TeamMember $member) => $member->toInertia()
         );
+
+        $currentProject = $projectId ? \App\Models\Project::find($projectId) : null;
 
         return Inertia::render('Resources/Team', [
             'teamMembers' => $page['data'],
             'pagination' => $page['pagination'],
             'projects' => $this->projectOptions(),
+            'currentProject' => $currentProject?->toInertia(),
+            'filters' => ['project_id' => $projectId],
         ]);
     }
 

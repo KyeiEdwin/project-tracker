@@ -40,13 +40,31 @@ class ProjectController extends Controller
 
     public function show(Project $project): Response
     {
-        $project->load(['tasks.assignee', 'milestones', 'risks']);
+        $project->load([
+            'tasks.assignee', 
+            'milestones', 
+            'risks', 
+            'stakeholders',
+            'teamMembers',
+            'reports',
+            'documents'
+        ]);
 
         return Inertia::render('Projects/Show', [
             'project' => $project->toInertia(),
             'tasks' => $project->tasks->map->toInertia()->values(),
             'milestones' => $project->milestones->map->toInertia()->values(),
             'risks' => $project->risks->map->toInertia()->values(),
+            'stakeholders' => $project->stakeholders->map->toInertia()->values(),
+            'teamMembers' => $this->teamMemberOptions(),
+            'stats' => [
+                'totalTasks' => $project->tasks->count(),
+                'completedTasks' => $project->tasks->where('status', 'completed')->count(),
+                'openRisks' => $project->risks->where('status', '!=', 'closed')->count(),
+                'stakeholdersCount' => $project->stakeholders->count(),
+                'teamMembersCount' => $project->teamMembers->count(),
+                'documentsCount' => $project->documents->count(),
+            ],
         ]);
     }
 

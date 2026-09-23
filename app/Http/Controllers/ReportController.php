@@ -19,10 +19,15 @@ class ReportController extends Controller
 {
     public function analytics(): Response
     {
-        $reports = Report::query()
-            ->with('project')
-            ->latest()
-            ->get()
+        $projectId = request()->query('project_id');
+        
+        $query = Report::query()->with('project')->latest();
+        
+        if ($projectId) {
+            $query->where('project_id', $projectId);
+        }
+        
+        $reports = $query->get()
             ->map(fn (Report $report) => $report->toInertia())
             ->values();
 
@@ -30,10 +35,14 @@ class ReportController extends Controller
             $reports = collect($this->catalog())->values();
         }
 
+        $currentProject = $projectId ? Project::find($projectId) : null;
+
         return Inertia::render('Reports/Analytics', [
             'reportTypes' => $reports,
-            'metrics' => $this->liveMetrics(),
+            'metrics' => $this->liveMetrics($projectId),
             'projects' => $this->projectOptions(),
+            'currentProject' => $currentProject?->toInertia(),
+            'filters' => ['project_id' => $projectId],
         ]);
     }
 
@@ -112,15 +121,29 @@ class ReportController extends Controller
     /**
      * @return array<string, int|float>
      */
-    private function liveMetrics(): array
+    private function liveMetrics(?int $projectId = null): array
     {
+        $projectQuery = Project::query();
+        $taskQuery = Task::query()->whereNotIn('status', ['completed', 'done']);
+        $riskQuery = Risk::query()->where('status', '!=', 'closed');
+        $timeQuery = TimeEntry::query();
+        $budgetQuery = BudgetItem::query();
+        
+        if ($projectId) {
+            $projectQuery->where('id', $projectId);
+            $taskQuery->where('project_id', $projectId);
+            $riskQuery->where('project_id', $projectId);
+            $timeQuery->where('project_id', $projectId);
+            $budgetQuery->where('project_id', $projectId);
+        }
+        
         return [
-            'totalProjects' => Project::query()->count(),
-            'activeTasks' => Task::query()->whereNotIn('status', ['completed', 'done'])->count(),
+            'totalProjects' => $projectQuery->count(),
+            'activeTasks' => $taskQuery->count(),
             'teamMembers' => TeamMember::query()->count(),
-            'openRisks' => Risk::query()->where('status', '!=', 'closed')->count(),
-            'hoursLogged' => (float) TimeEntry::query()->sum('hours'),
-            'budgetSpent' => (float) BudgetItem::query()->sum('spent'),
+            'openRisks' => $riskQuery->count(),
+            'hoursLogged' => (float) $timeQuery->sum('hours'),
+            'budgetSpent' => (float) $budgetQuery->sum('spent'),
         ];
     }
 }

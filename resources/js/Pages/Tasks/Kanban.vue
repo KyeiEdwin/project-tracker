@@ -1,7 +1,10 @@
 <script setup>
+import { ref, computed } from 'vue'
+import { usePage } from '@inertiajs/vue3'
 import PageHeader from '@/components/ui/PageHeader.vue'
+import { useProjectRealtime } from '@/composables/useProjectRealtime'
 
-defineProps({
+const props = defineProps({
   columns: {
     type: Array,
     default: () => [
@@ -11,6 +14,31 @@ defineProps({
       { id: 'done', title: 'Done', color: 'success', tasks: [] },
     ],
   },
+  projectId: {
+    type: [Number, String],
+    default: null,
+  },
+})
+
+const columns = ref(props.columns.map((column) => ({ ...column, tasks: [...column.tasks] })))
+const page = usePage()
+const projectId = computed(() => props.projectId || new URL(page.url, window.location.origin).searchParams.get('project_id'))
+
+const replaceTask = (event) => {
+  columns.value = columns.value.map((column) => ({
+    ...column,
+    tasks: column.tasks.filter((task) => task.id !== event.task.id),
+  }))
+
+  if (!event.deleted) {
+    const target = columns.value.find((column) => column.id === event.task.status || (column.id === 'done' && ['done', 'completed'].includes(event.task.status)))
+    if (target) target.tasks.push(event.task)
+  }
+}
+
+useProjectRealtime(projectId, {
+  onTaskUpdated: replaceTask,
+  only: ['columns'],
 })
 
 const getPriorityClass = (priority) => ({

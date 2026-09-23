@@ -3,6 +3,7 @@ import { createInertiaApp, Link } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 import { createPinia } from 'pinia'
 import AppLayout from './Layouts/AppLayout.vue'
+import './realtime/echo'
 
 // Import Preline for dropdowns and interactive components
 import './preline.js'

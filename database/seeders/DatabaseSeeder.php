@@ -3,12 +3,18 @@
 namespace Database\Seeders;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $demoUser = User::query()->updateOrCreate(
+            ['email' => 'demo@example.com'],
+            ['name' => 'Demo User', 'password' => 'password']
+        );
+
         $demos = [
             [
                 'name' => 'Website Redesign',
@@ -23,6 +29,7 @@ class DatabaseSeeder extends Seeder
                 'spent' => 35000,
                 'client' => 'Acme Corp',
                 'project_type' => 'agile',
+                'owner_id' => $demoUser->id,
             ],
             [
                 'name' => 'Mobile App Development',
@@ -37,6 +44,7 @@ class DatabaseSeeder extends Seeder
                 'spent' => 54000,
                 'client' => 'Northwind',
                 'project_type' => 'hybrid',
+                'owner_id' => $demoUser->id,
             ],
             [
                 'name' => 'CRM Integration',
@@ -51,6 +59,7 @@ class DatabaseSeeder extends Seeder
                 'spent' => 28500,
                 'client' => 'Contoso',
                 'project_type' => 'predictive',
+                'owner_id' => $demoUser->id,
             ],
             [
                 'name' => 'Data Migration',
@@ -65,6 +74,7 @@ class DatabaseSeeder extends Seeder
                 'spent' => 45000,
                 'client' => 'Internal',
                 'project_type' => 'predictive',
+                'owner_id' => $demoUser->id,
             ],
             [
                 'name' => 'Security Audit',
@@ -79,6 +89,7 @@ class DatabaseSeeder extends Seeder
                 'spent' => 2500,
                 'client' => 'Compliance Office',
                 'project_type' => 'agile',
+                'owner_id' => $demoUser->id,
             ],
         ];
 

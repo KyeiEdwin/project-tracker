@@ -13,15 +13,27 @@ class StakeholderController extends Controller
 {
     public function index(): Response
     {
+        $projectId = request()->query('project_id');
+        
+        $query = Stakeholder::query()->with('project')->latest();
+        
+        if ($projectId) {
+            $query->where('project_id', $projectId);
+        }
+        
         $page = $this->inertiaPage(
-            Stakeholder::query()->with('project')->latest(),
+            $query,
             fn (Stakeholder $stakeholder) => $stakeholder->toInertia()
         );
+
+        $currentProject = $projectId ? \App\Models\Project::find($projectId) : null;
 
         return Inertia::render('Initiation/Stakeholders', [
             'stakeholders' => $page['data'],
             'pagination' => $page['pagination'],
             'projects' => $this->projectOptions(),
+            'currentProject' => $currentProject?->toInertia(),
+            'filters' => ['project_id' => $projectId],
         ]);
     }
 

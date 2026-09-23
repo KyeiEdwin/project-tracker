@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AgileController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AgileDefinitionController;
 use App\Http\Controllers\BacklogItemController;
 use App\Http\Controllers\BudgetItemController;
@@ -27,6 +28,10 @@ use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\TimeEntryController;
 use App\Http\Controllers\WorkflowController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/login', [AuthController::class, 'create'])->name('login');
+Route::post('/login', [AuthController::class, 'store'])->name('login.store');
+Route::post('/logout', [AuthController::class, 'destroy'])->middleware('auth')->name('logout');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 

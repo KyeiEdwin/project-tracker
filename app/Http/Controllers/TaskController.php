@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ProjectProgressUpdated;
+use App\Events\TaskUpdated;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use App\Models\TaskDependency;
+use App\Services\ProjectProgressService;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -29,7 +32,12 @@ class TaskController extends Controller
 
     public function kanban(): Response
     {
-        $tasks = Task::query()->with(['project', 'assignee'])->orderBy('kanban_order')->get();
+        $projectId = request()->integer('project_id') ?: null;
+        $tasks = Task::query()
+            ->with(['project', 'assignee'])
+            ->when($projectId, fn ($query) => $query->where('project_id', $projectId))
+            ->orderBy('kanban_order')
+            ->get();
 
         $groups = [
             'backlog' => ['id' => 'backlog', 'title' => 'Backlog', 'color' => 'secondary', 'statuses' => ['backlog', 'pending']],
@@ -55,6 +63,7 @@ class TaskController extends Controller
         return Inertia::render('Tasks/Kanban', [
             'columns' => $columns,
             'projects' => $this->projectOptions(),
+            'projectId' => $projectId,
         ]);
     }
 
@@ -68,10 +77,12 @@ class TaskController extends Controller
         ]);
     }
 
-    public function store(StoreTaskRequest $request): RedirectResponse
+    public function store(StoreTaskRequest $request, ProjectProgressService $progressService): RedirectResponse
     {
         $task = Task::query()->create($request->safe()->except('dependencies'));
         $this->syncDependencies($task, $request->input('dependencies', []));
+        $progress = $progressService->recalculate($task->project);
+        $this->broadcastTaskChange($task, $progress);
 
         return redirect()->route('tasks.index')->with('success', 'Task created.');
     }
@@ -101,7 +112,7 @@ class TaskController extends Controller
         ]);
     }
 
-    public function update(UpdateTaskRequest $request, Task $task): RedirectResponse
+    public function update(UpdateTaskRequest $request, Task $task, ProjectProgressService $progressService): RedirectResponse
     {
         $task->update($request->safe()->except('dependencies'));
 
@@ -110,15 +121,21 @@ class TaskController extends Controller
             $this->syncDependencies($task, $request->input('dependencies', []));
         }
 
+        $progress = $progressService->recalculate($task->project);
+        $this->broadcastTaskChange($task, $progress);
+
         return redirect()->route('tasks.index')->with('success', 'Task updated.');
     }
 
-    public function destroy(Task $task): RedirectResponse
+    public function destroy(Task $task, ProjectProgressService $progressService): RedirectResponse
     {
+        $project = $task->project;
         $task->subtasks()->delete();
         $task->dependencies()->delete();
         $task->dependents()->delete();
         $task->delete();
+        $progress = $progressService->recalculate($project);
+        $this->broadcastTaskChange($task, $progress, true);
 
         return redirect()->route('tasks.index')->with('success', 'Task removed.');
     }
@@ -139,5 +156,13 @@ class TaskController extends Controller
                 'type' => 'blocks',
             ]);
         }
+    }
+
+    private function broadcastTaskChange(Task $task, int $progress, bool $deleted = false): void
+    {
+        $taskPayload = $task->toInertia();
+
+        TaskUpdated::dispatch($task->project_id, $taskPayload, $progress, $deleted);
+        ProjectProgressUpdated::dispatch($task->project_id, $progress);
     }
 }
