@@ -3,7 +3,11 @@ import { computed } from 'vue'
 import { router, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 
-const props = defineProps({ project: { type: Object, default: null }, formMode: { type: String, default: 'create' } })
+const props = defineProps({
+  project: { type: Object, default: null },
+  formMode: { type: String, default: 'create' },
+  teams: { type: Array, default: () => [] },
+})
 
 const form = useForm({
   projectType: props.project?.projectType ?? '',
@@ -11,10 +15,10 @@ const form = useForm({
   description: props.project?.description ?? '',
   startDate: props.project?.startDate ?? '',
   endDate: props.project?.endDate ?? '',
-  budget: props.project?.budget ?? '',
   priority: props.project?.priority ?? 'medium',
   status: props.project?.status ?? 'planning',
   team: props.project?.team ?? '',
+  team_id: props.project?.teamId ?? '',
   client: props.project?.client ?? '',
   // Predictive fields
   phases: '',
@@ -97,13 +101,6 @@ const showHybridFields = computed(() => form.projectType === 'hybrid')
                 <input v-model="form.endDate" type="date" class="ti-form-control">
               </div>
               <div class="col-span-12 md:col-span-6">
-                <label class="ti-form-label">Budget</label>
-                <div class="input-group">
-                  <span class="input-group-text">$</span>
-                  <input v-model="form.budget" type="number" class="ti-form-control" placeholder="0.00">
-                </div>
-              </div>
-              <div class="col-span-12 md:col-span-6">
                 <label class="ti-form-label">Priority</label>
                 <select v-model="form.priority" class="ti-form-select">
                   <option value="low">Low</option>
@@ -121,13 +118,11 @@ const showHybridFields = computed(() => form.projectType === 'hybrid')
               </div>
               <div class="col-span-12 md:col-span-6">
                 <label class="ti-form-label">Assigned Team</label>
-                <select v-model="form.team" class="ti-form-select">
+                <select v-model="form.team_id" class="ti-form-select">
                   <option value="">Select Team</option>
-                  <option value="development">Development Team</option>
-                  <option value="marketing">Marketing Team</option>
-                  <option value="design">Design Team</option>
-                  <option value="qa">QA Team</option>
+                  <option v-for="team in teams" :key="team.id" :value="team.id">{{ team.name }}</option>
                 </select>
+                <p v-if="form.errors.team_id" class="text-xs text-danger mt-1">{{ form.errors.team_id }}</p>
               </div>
 
               <!-- Predictive Project Type Fields -->

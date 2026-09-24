@@ -4,22 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\TeamMember;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 abstract class Controller
 {
+    use AuthorizesRequests;
+
     /**
      * @return array<int, array<string, mixed>>
      */
     protected function projectOptions(): array
     {
-        return Project::query()
+        return $this->accessibleProjectsQuery()
             ->orderBy('name')
             ->get()
             ->map(fn (Project $project) => $project->toInertia())
             ->values()
             ->all();
+    }
+
+    protected function accessibleProjectsQuery(?User $user = null): Builder
+    {
+        $user ??= request()->user();
+
+        if ($user?->role?->name === 'admin') {
+            return Project::query();
+        }
+
+        return Project::query()->where(function (Builder $query) use ($user): void {
+            $query->where('owner_id', $user?->id)
+                ->orWhereHas('users', fn (Builder $users) => $users->whereKey($user?->id));
+        });
     }
 
     /**

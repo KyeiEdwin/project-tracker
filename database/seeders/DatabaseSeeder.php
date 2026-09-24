@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Project;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -10,9 +12,35 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $permissionNames = config('authorization.permissions', []);
+        $permissions = collect($permissionNames)->mapWithKeys(function (string $name): array {
+            $permission = Permission::query()->updateOrCreate(
+                ['name' => $name],
+                ['label' => str($name)->replace('.', ' ')->title()]
+            );
+
+            return [$name => $permission];
+        });
+
+        $adminRole = Role::query()->updateOrCreate(['name' => 'admin'], ['label' => 'Administrator']);
+        $teamMemberRole = Role::query()->updateOrCreate(['name' => 'team_member'], ['label' => 'Team Member']);
+        $adminRole->permissions()->sync($permissions->pluck('id'));
+        $teamMemberRole->permissions()->sync($permissions->only([
+            'dashboard.team_member.view',
+            'member.dashboard.view', 'member.project.view', 'member.task.view',
+            'member.task.status.update', 'member.task.complete',
+            'profile.view', 'profile.edit', 'setting.view',
+        ])->pluck('id'));
+
         $demoUser = User::query()->updateOrCreate(
             ['email' => 'demo@example.com'],
-            ['name' => 'Demo User', 'password' => 'password']
+            [
+                'name' => 'Demo User',
+                'password' => 'password',
+                'role_id' => $adminRole->id,
+                'is_active' => true,
+                'email_verified_at' => now(),
+            ]
         );
 
         $demos = [

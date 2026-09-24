@@ -18,11 +18,6 @@ class ResourceController extends Controller
         return app(TimeEntryController::class)->index();
     }
 
-    public function budget(): Response
-    {
-        return app(BudgetItemController::class)->index();
-    }
-
     public function milestones(): Response
     {
         return app(MilestoneController::class)->index();

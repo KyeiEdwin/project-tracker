@@ -55,10 +55,6 @@ const formatDate = (dateStr) => {
   })
 }
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
-}
-
 const deleteProject = (project) => {
   if (window.confirm(`Archive ${project.name}?`)) {
     router.delete(`/projects/${project.id}`, { preserveScroll: true })
@@ -115,14 +111,13 @@ const deleteProject = (project) => {
                 <th>Status</th>
                 <th>Progress</th>
                 <th>Priority</th>
-                <th>Budget</th>
                 <th>Due Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="filteredProjects.length === 0">
-                <td colspan="8" class="text-center py-8 text-textmuted">
+                <td colspan="7" class="text-center py-8 text-textmuted">
                   No projects found. Create one to get started.
                 </td>
               </tr>
@@ -139,7 +134,7 @@ const deleteProject = (project) => {
                       <Link :href="`/projects/${project.id}`" class="font-medium text-defaulttextcolor hover:text-primary">
                         {{ project.name }}
                       </Link>
-                      <p class="text-textmuted text-xs mb-0">{{ project.team || 'Unassigned' }}</p>
+                      <p class="text-textmuted text-xs mb-0">{{ project.teamName || project.team || 'Unassigned' }}</p>
                     </div>
                   </div>
                 </td>
@@ -160,12 +155,6 @@ const deleteProject = (project) => {
                   <span class="badge" :class="getPriorityClass(project.priority)">
                     {{ project.priority }}
                   </span>
-                </td>
-                <td>
-                  <div>
-                    <span class="font-medium">{{ formatCurrency(project.spent) }}</span>
-                    <span class="text-textmuted text-xs"> / {{ formatCurrency(project.budget) }}</span>
-                  </div>
                 </td>
                 <td>{{ formatDate(project.dueDate) }}</td>
                 <td>

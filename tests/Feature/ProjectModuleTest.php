@@ -218,25 +218,6 @@ class ProjectModuleTest extends TestCase
     }
 
     /** @test */
-    public function chat_receives_project_context()
-    {
-        // Arrange
-        $project = Project::factory()->create();
-
-        // Act
-        $response = $this->get(route('chat', ['project_id' => $project->id]));
-
-        // Assert
-        $response->assertOk();
-        $response->assertInertia(fn ($page) =>
-            $page->component('Communication/Chat')
-                ->has('currentProject')
-                ->has('projects')
-                ->where('filters.project_id', $project->id)
-        );
-    }
-
-    /** @test */
     public function project_crud_operations_work()
     {
         // Test Create
@@ -297,7 +278,6 @@ class ProjectModuleTest extends TestCase
             route('initiation.stakeholders', ['project_id' => $project->id]),
             route('resources.team', ['project_id' => $project->id]),
             route('quality.risks', ['project_id' => $project->id]),
-            route('chat', ['project_id' => $project->id]),
             route('resources.gantt', ['project_id' => $project->id]),
             route('reports.analytics', ['project_id' => $project->id]),
         ];

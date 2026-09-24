@@ -17,7 +17,7 @@ const props = defineProps({
 const isOpen = ref(false)
 const editing = ref(null)
 const message = ref('')
-const defaults = () => Object.fromEntries(props.fields.map((field) => [field.name, field.default ?? '']))
+const defaults = () => Object.fromEntries(props.fields.map((field) => [field.name, field.default ?? (field.multiple ? [] : '')]))
 const form = useForm(defaults())
 const columns = computed(() => props.fields.filter((field) => field.list !== false).slice(0, 6))
 
@@ -31,6 +31,7 @@ const inputOptions = (field) => {
 const display = (item, field) => {
   const value = item[field.display ?? field.name] ?? item[field.camelName]
   if (field.type === 'boolean') return value ? 'Yes' : 'No'
+  if (Array.isArray(value)) return value.length ? value.join(', ') : '—'
   return value === null || value === undefined || value === '' ? '—' : value
 }
 
@@ -89,7 +90,7 @@ const destroy = (item) => {
       <div class="grid max-h-[65vh] grid-cols-1 gap-4 overflow-y-auto px-6 py-5 md:grid-cols-2">
         <label v-for="field in fields" :key="field.name" :class="field.full ? 'md:col-span-2' : ''" class="block"><span class="ti-form-label">{{ field.label }}<span v-if="field.required" class="text-danger"> *</span></span>
           <textarea v-if="field.type === 'textarea'" v-model="form[field.name]" class="ti-form-control" :rows="3" />
-          <select v-else-if="field.type === 'select'" v-model="form[field.name]" class="ti-form-select"><option value="">Select {{ field.label }}</option><option v-for="option in inputOptions(field)" :key="option.value" :value="option.value">{{ option.label }}</option></select>
+          <select v-else-if="field.type === 'select'" v-model="form[field.name]" class="ti-form-select" :multiple="field.multiple"><option v-if="!field.multiple" value="">Select {{ field.label }}</option><option v-for="option in inputOptions(field)" :key="option.value" :value="option.value">{{ option.label }}</option></select>
           <input v-else-if="field.type === 'boolean'" v-model="form[field.name]" class="ti-form-check-input" type="checkbox">
           <input v-else v-model="form[field.name]" class="ti-form-control" :type="field.type || 'text'">
           <span v-if="form.errors[field.name]" class="mt-1 block text-xs text-danger">{{ form.errors[field.name] }}</span>

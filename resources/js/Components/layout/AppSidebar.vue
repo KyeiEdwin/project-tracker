@@ -13,8 +13,11 @@ const emit = defineEmits(['close'])
 
 const page = usePage()
 const openMenus = ref([])
+const permissions = computed(() => page.props.auth?.permissions || [])
 
-const menuItems = [
+const can = (permission) => permissions.value.includes(permission)
+
+const adminMenuItems = [
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -67,7 +70,6 @@ const menuItems = [
     children: [
       { label: 'Team', to: '/resources/team' },
       { label: 'Time Tracking', to: '/resources/time-tracking' },
-      { label: 'Budget', to: '/resources/budget' },
       { label: 'Milestones', to: '/resources/milestones' },
       { label: 'Gantt Chart', to: '/resources/gantt' }
     ]
@@ -98,13 +100,71 @@ const menuItems = [
     icon: 'ri-pie-chart-line',
     to: '/charts'
   },
-  {
-    id: 'chat',
-    label: 'Chat',
-    icon: 'ri-chat-3-line',
-    to: '/chat'
-  }
 ]
+
+const menuItems = computed(() => {
+  if (page.props.auth?.teamMember) {
+    const items = []
+
+    if (can('member.dashboard.view')) {
+      items.push({
+        id: 'team-member-dashboard',
+        label: 'My Dashboard',
+        icon: 'ri-home-line',
+        to: '/team-member/dashboard',
+      })
+    }
+
+    if (can('member.project.view')) {
+      items.push({
+        id: 'team-member-projects',
+        label: 'Project List',
+        icon: 'ri-folder-line',
+        to: '/team-member/dashboard#projects',
+      })
+    }
+
+    if (can('member.task.view')) {
+      items.push({
+        id: 'team-member-tasks',
+        label: 'Task List',
+        icon: 'ri-checkbox-circle-line',
+        to: '/team-member/dashboard#tasks',
+      })
+    }
+
+    if (can('dashboard.team_member.view')) {
+      items.push({
+        id: 'team-member-chat',
+        label: 'Team Chat',
+        icon: 'ri-chat-3-line',
+        to: '/team-member/chat',
+      })
+    }
+
+    if (can('profile.view')) {
+      items.push({
+        id: 'team-member-profile',
+        label: 'Profile',
+        icon: 'ri-user-line',
+        to: '/team-member/profile',
+      })
+    }
+
+    if (can('setting.view')) {
+      items.push({
+        id: 'team-member-settings',
+        label: 'Settings',
+        icon: 'ri-settings-3-line',
+        to: '/team-member/settings',
+      })
+    }
+
+    return items
+  }
+
+  return adminMenuItems
+})
 
 const toggleMenu = (menuId) => {
   const index = openMenus.value.indexOf(menuId)
@@ -139,7 +199,7 @@ const handleLinkClick = () => {
       <nav class="sidebar-nav">
         <ul class="sidebar-menu">
           <li 
-            v-for="item in menuItems" 
+            v-for="item in menuItems"
             :key="item.id"
             class="sidebar-item"
             :class="{ 
@@ -198,19 +258,22 @@ const handleLinkClick = () => {
 </template>
 
 <style scoped>
+/* Sidebar - Modernized */
 .app-sidebar {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  width: 260px;
-  background-color: #fff;
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  width: 280px;
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
   transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 50;
   overflow-y: auto;
-  padding-top: 64px; /* Header height */
+  padding-top: 64px;
+  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.04);
 }
 
 .app-sidebar.is-open {
@@ -223,13 +286,15 @@ const handleLinkClick = () => {
   }
 }
 
+/* Dark Mode Sidebar - Enhanced */
 .dark .app-sidebar {
-  background-color: rgb(32, 41, 71);
-  border-right-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(15, 23, 42, 0.98);
+  border-right-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-content {
-  padding: 1rem 0;
+  padding: 1.5rem 0;
 }
 
 .sidebar-menu {
@@ -239,16 +304,18 @@ const handleLinkClick = () => {
 }
 
 .sidebar-item {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.375rem;
+  padding: 0 1rem;
 }
 
+/* Sidebar Links - Modernized */
 .sidebar-link {
   display: flex;
   align-items: center;
-  padding: 0.75rem 1.5rem;
+  padding: 0.875rem 1rem;
   color: #6b7280;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: none;
   background: transparent;
@@ -256,38 +323,48 @@ const handleLinkClick = () => {
   text-align: left;
   font-size: 0.9375rem;
   position: relative;
+  border-radius: 0.75rem;
+  font-weight: 500;
 }
 
 .sidebar-link:hover {
-  background-color: rgba(var(--primary), 0.05);
-  color: rgb(var(--primary));
+  background-color: rgba(22, 163, 74, 0.08);
+  color: rgb(22, 163, 74);
+  transform: translateX(2px);
 }
 
 .sidebar-link.active {
-  background-color: rgba(var(--primary), 0.1);
-  color: rgb(var(--primary));
-  font-weight: 500;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.15), rgba(16, 185, 129, 0.1));
+  color: rgb(22, 163, 74);
+  font-weight: 600;
 }
 
 .sidebar-link.active::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background-color: rgb(var(--primary));
+  left: -1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 60%;
+  background: linear-gradient(180deg, rgb(22, 163, 74), rgb(16, 185, 129));
+  border-radius: 0 4px 4px 0;
 }
 
 .sidebar-icon {
-  font-size: 1.25rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  font-size: 1.375rem;
+  width: 1.75rem;
+  height: 1.75rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-right: 0.75rem;
+  margin-right: 0.875rem;
   flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.sidebar-link:hover .sidebar-icon {
+  transform: scale(1.1);
 }
 
 .sidebar-label {
@@ -296,7 +373,7 @@ const handleLinkClick = () => {
 }
 
 .sidebar-arrow {
-  font-size: 1rem;
+  font-size: 1.125rem;
   margin-left: auto;
   transition: transform 0.2s ease;
   flex-shrink: 0;
@@ -306,11 +383,13 @@ const handleLinkClick = () => {
   transform: rotate(180deg);
 }
 
+/* Submenu - Modernized */
 .sidebar-submenu {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 0.5rem 0 0.5rem 0;
+  margin: 0.5rem 0 0 0;
   background-color: rgba(0, 0, 0, 0.02);
+  border-radius: 0.75rem;
   max-height: 0;
   overflow: hidden;
   animation: slideDown 0.3s ease forwards;
@@ -328,61 +407,70 @@ const handleLinkClick = () => {
 
 .submenu-item {
   margin: 0;
+  padding: 0 0.5rem;
 }
 
 .submenu-link {
   display: flex;
   align-items: center;
-  padding: 0.625rem 1.5rem 0.625rem 3.5rem;
+  padding: 0.75rem 1rem 0.75rem 3rem;
   color: #6b7280;
   text-decoration: none;
   font-size: 0.875rem;
   transition: all 0.2s ease;
   position: relative;
+  border-radius: 0.5rem;
 }
 
 .submenu-link:hover {
-  background-color: rgba(var(--primary), 0.05);
-  color: rgb(var(--primary));
+  background-color: rgba(22, 163, 74, 0.08);
+  color: rgb(22, 163, 74);
 }
 
 .submenu-link.active {
-  color: rgb(var(--primary));
-  font-weight: 500;
+  color: rgb(22, 163, 74);
+  font-weight: 600;
+  background-color: rgba(22, 163, 74, 0.1);
 }
 
 .submenu-bullet {
   position: absolute;
-  left: 2.25rem;
+  left: 1.75rem;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background-color: currentColor;
   opacity: 0.5;
+  transition: all 0.2s ease;
 }
 
 .submenu-link.active .submenu-bullet {
   opacity: 1;
-  background-color: rgb(var(--primary));
+  background-color: rgb(22, 163, 74);
+  transform: scale(1.3);
 }
 
-/* Dark mode text colors */
+/* Dark mode text colors - Enhanced */
 .dark .sidebar-link,
 .dark .submenu-link {
-  color: #a2a6b9;
+  color: #d1d5db;
 }
 
 .dark .sidebar-link:hover,
 .dark .submenu-link:hover {
-  color: #fff;
+  color: rgb(134, 239, 172);
 }
 
 .dark .sidebar-link.active,
 .dark .submenu-link.active {
-  color: #fff;
+  color: rgb(134, 239, 172);
 }
 
-/* Custom scrollbar */
+.dark .sidebar-link.active {
+  background: linear-gradient(135deg, rgba(134, 239, 172, 0.15), rgba(16, 185, 129, 0.1));
+}
+
+/* Custom scrollbar - Modernized */
 .app-sidebar::-webkit-scrollbar {
   width: 6px;
 }
@@ -392,19 +480,19 @@ const handleLinkClick = () => {
 }
 
 .app-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(22, 163, 74, 0.2);
   border-radius: 3px;
 }
 
 .dark .app-sidebar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(134, 239, 172, 0.2);
 }
 
 .app-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(22, 163, 74, 0.3);
 }
 
 .dark .app-sidebar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(134, 239, 172, 0.3);
 }
 </style>

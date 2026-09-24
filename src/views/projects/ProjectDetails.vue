@@ -16,7 +16,6 @@ const project = ref({
   priority: 'high',
   startDate: '2024-10-01',
   endDate: '2024-12-15',
-  budget: 50000,
   spent: 35000,
   team: 'Marketing Team',
   client: 'Acme Corp',
@@ -213,27 +212,6 @@ const saveTask = () => {
             <div class="flex justify-between text-sm text-textmuted">
               <span>Started: {{ project.startDate }}</span>
               <span>Due: {{ project.endDate }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Budget -->
-        <div class="box">
-          <div class="box-header">
-            <h5 class="box-title">Budget</h5>
-          </div>
-          <div class="box-body">
-            <div class="flex justify-between mb-2">
-              <span class="text-textmuted">Total Budget</span>
-              <span class="font-medium">${{ project.budget.toLocaleString() }}</span>
-            </div>
-            <div class="flex justify-between mb-2">
-              <span class="text-textmuted">Spent</span>
-              <span class="font-medium text-warning">${{ project.spent.toLocaleString() }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-textmuted">Remaining</span>
-              <span class="font-medium text-success">${{ (project.budget - project.spent).toLocaleString() }}</span>
             </div>
           </div>
         </div>

@@ -25,7 +25,6 @@ import Workflows from '@/views/tasks/Workflows.vue'
 // Views - Resources
 import Resources from '@/views/resources/Resources.vue'
 import TimeTracking from '@/views/resources/TimeTracking.vue'
-import Budget from '@/views/resources/Budget.vue'
 import Milestones from '@/views/resources/Milestones.vue'
 import ProjectGantt from '@/views/resources/ProjectGantt.vue'
 
@@ -38,9 +37,6 @@ import ChangeLog from '@/views/quality/ChangeLog.vue'
 import Reports from '@/views/reports/Reports.vue'
 import Documents from '@/views/reports/Documents.vue'
 import LessonsLearned from '@/views/reports/LessonsLearned.vue'
-
-// Views - Communication
-import ProjectChat from '@/views/communication/ProjectChat.vue'
 
 const routes = [
   {
@@ -133,12 +129,6 @@ const routes = [
     meta: { title: 'Time Tracking', breadcrumb: 'Time Tracking' }
   },
   {
-    path: '/resources/budget',
-    name: 'Budget',
-    component: Budget,
-    meta: { title: 'Budget', breadcrumb: 'Budget' }
-  },
-  {
     path: '/resources/milestones',
     name: 'Milestones',
     component: Milestones,
@@ -187,13 +177,6 @@ const routes = [
     name: 'LessonsLearned',
     component: LessonsLearned,
     meta: { title: 'Lessons Learned', breadcrumb: 'Lessons' }
-  },
-  // Communication
-  {
-    path: '/chat',
-    name: 'ProjectChat',
-    component: ProjectChat,
-    meta: { title: 'Project Chat', breadcrumb: 'Chat' }
   },
   // Catch-all redirect
   {

@@ -35,10 +35,24 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user('web');
+        $teamMember = $request->user('team_member');
+        $permissions = [];
+
+        if ($user) {
+            $permissions = $user->loadMissing('role.permissions')
+                ->role?->permissions->pluck('name')->values()->all() ?? [];
+        } elseif ($teamMember) {
+            $permissions = $teamMember->loadMissing('memberRole.permissions')
+                ->memberRole?->permissions->pluck('name')->values()->all() ?? [];
+        }
+
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $user,
+                'teamMember' => $teamMember,
+                'permissions' => $permissions,
             ],
             'isAuthPage' => $request->routeIs('login'),
             'flash' => [

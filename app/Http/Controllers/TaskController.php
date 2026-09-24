@@ -10,6 +10,8 @@ use App\Models\Task;
 use App\Models\TaskDependency;
 use App\Services\ProjectProgressService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Broadcasting\BroadcastException;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,7 +20,7 @@ class TaskController extends Controller
     public function index(): Response
     {
         $page = $this->inertiaPage(
-            Task::query()->with(['project', 'assignee'])->latest(),
+            Task::query()->whereIn('project_id', $this->accessibleProjectsQuery()->select('projects.id'))->with(['project', 'assignee'])->latest(),
             fn (Task $task) => $task->toInertia()
         );
 
@@ -34,6 +36,7 @@ class TaskController extends Controller
     {
         $projectId = request()->integer('project_id') ?: null;
         $tasks = Task::query()
+            ->whereIn('project_id', $this->accessibleProjectsQuery()->select('projects.id'))
             ->with(['project', 'assignee'])
             ->when($projectId, fn ($query) => $query->where('project_id', $projectId))
             ->orderBy('kanban_order')
@@ -79,7 +82,10 @@ class TaskController extends Controller
 
     public function store(StoreTaskRequest $request, ProjectProgressService $progressService): RedirectResponse
     {
+        abort_unless($this->accessibleProjectsQuery()->whereKey($request->integer('project_id'))->exists(), 404);
+
         $task = Task::query()->create($request->safe()->except('dependencies'));
+        $this->syncAssigneeProjectMembership($task);
         $this->syncDependencies($task, $request->input('dependencies', []));
         $progress = $progressService->recalculate($task->project);
         $this->broadcastTaskChange($task, $progress);
@@ -89,6 +95,8 @@ class TaskController extends Controller
 
     public function show(Task $task): Response
     {
+        $this->authorize('view', $task);
+
         $task->load(['project', 'assignee', 'subtasks.assignee', 'dependencies']);
 
         return Inertia::render('Tasks/Index', [
@@ -101,6 +109,8 @@ class TaskController extends Controller
 
     public function edit(Task $task): Response
     {
+        $this->authorize('update', $task);
+
         $task->load(['project', 'assignee', 'subtasks']);
 
         return Inertia::render('Tasks/Index', [
@@ -114,7 +124,10 @@ class TaskController extends Controller
 
     public function update(UpdateTaskRequest $request, Task $task, ProjectProgressService $progressService): RedirectResponse
     {
+        $this->authorize('update', $task);
+
         $task->update($request->safe()->except('dependencies'));
+        $this->syncAssigneeProjectMembership($task);
 
         if ($request->has('dependencies')) {
             $task->dependencies()->delete();
@@ -127,8 +140,17 @@ class TaskController extends Controller
         return redirect()->route('tasks.index')->with('success', 'Task updated.');
     }
 
+    private function syncAssigneeProjectMembership(Task $task): void
+    {
+        if ($task->team_member_id) {
+            $task->project->teamMembers()->syncWithoutDetaching([$task->team_member_id]);
+        }
+    }
+
     public function destroy(Task $task, ProjectProgressService $progressService): RedirectResponse
     {
+        $this->authorize('delete', $task);
+
         $project = $task->project;
         $task->subtasks()->delete();
         $task->dependencies()->delete();
@@ -162,7 +184,22 @@ class TaskController extends Controller
     {
         $taskPayload = $task->toInertia();
 
-        TaskUpdated::dispatch($task->project_id, $taskPayload, $progress, $deleted);
-        ProjectProgressUpdated::dispatch($task->project_id, $progress);
+        $events = [
+            new TaskUpdated($task->project_id, $taskPayload, $progress, $deleted),
+            new ProjectProgressUpdated($task->project_id, $progress),
+        ];
+
+        foreach ($events as $event) {
+            try {
+                event($event);
+            } catch (BroadcastException $exception) {
+                // Realtime is optional; a down WebSocket server must not roll back task changes.
+                Log::warning('Realtime task broadcast skipped.', [
+                    'event' => $event::class,
+                    'project_id' => $task->project_id,
+                    'error' => $exception->getMessage(),
+                ]);
+            }
+        }
     }
 }

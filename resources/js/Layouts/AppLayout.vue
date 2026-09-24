@@ -101,22 +101,44 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Global app styles */
+/* Global app styles - Modernized */
+.page {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease;
+}
+
+.dark .page {
+  background-color: rgb(15, 23, 42);
+}
+
 .sidebar-overlay {
   position: fixed;
   inset: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
   z-index: 40;
   transition: opacity 0.3s ease;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .main-content {
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
 }
 
 @media (min-width: 992px) {
   .main-content.sidebar-expanded {
-    margin-left: 260px;
+    margin-left: 280px;
   }
 }
 </style>

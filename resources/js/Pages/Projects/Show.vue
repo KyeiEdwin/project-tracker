@@ -96,14 +96,6 @@ const formatDate = (dateStr) => {
   })
 }
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', { 
-    style: 'currency', 
-    currency: 'USD', 
-    maximumFractionDigits: 0 
-  }).format(amount || 0)
-}
-
 const getStatusClass = (status) => {
   const classes = {
     'planning': 'bg-info/10 text-info',
@@ -329,30 +321,6 @@ const getPriorityClass = (priority) => {
           </div>
         </div>
 
-        <!-- Budget -->
-        <div class="box">
-          <div class="box-header">
-            <h5 class="box-title">Budget</h5>
-          </div>
-          <div class="box-body">
-            <div class="flex justify-between mb-2">
-              <span class="text-textmuted">Total Budget</span>
-              <span class="font-medium">{{ formatCurrency(project.budget) }}</span>
-            </div>
-            <div class="flex justify-between mb-2">
-              <span class="text-textmuted">Spent</span>
-              <span class="font-medium text-warning">{{ formatCurrency(project.spent) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-textmuted">Remaining</span>
-              <span class="font-medium text-success">{{ formatCurrency(project.budget - project.spent) }}</span>
-            </div>
-            <div class="progress progress-sm mt-3">
-              <div class="progress-bar bg-warning" :style="{ width: ((project.spent / project.budget) * 100) + '%' }"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- Quick Stats -->
         <div class="box">
           <div class="box-header">
@@ -421,18 +389,6 @@ const getPriorityClass = (priority) => {
                 </div>
                 <p class="text-xs md:text-sm font-medium text-defaulttextcolor">Risks</p>
                 <p class="text-[10px] md:text-xs text-textmuted mt-1">{{ stats.openRisks || 0 }} open</p>
-              </Link>
-
-              <!-- Chat Card -->
-              <Link 
-                :href="sectionLink('/chat')"
-                class="group p-3 md:p-4 bg-light dark:bg-bgdark rounded-lg border border-defaultborder hover:border-primary hover:bg-primary/5 transition-all duration-200 text-center"
-              >
-                <div class="mb-2">
-                  <i class="ri-message-3-line text-2xl md:text-3xl text-primary group-hover:scale-110 transition-transform"></i>
-                </div>
-                <p class="text-xs md:text-sm font-medium text-defaulttextcolor">Chat</p>
-                <p class="text-[10px] md:text-xs text-textmuted mt-1">Team communication</p>
               </Link>
 
               <!-- Gantt Chart Card -->

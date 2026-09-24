@@ -58,7 +58,6 @@ const menuItems = [
     children: [
       { label: 'Team', to: '/resources/team' },
       { label: 'Time Tracking', to: '/resources/time-tracking' },
-      { label: 'Budget', to: '/resources/budget' },
       { label: 'Milestones', to: '/resources/milestones' },
       { label: 'Gantt Chart', to: '/resources/gantt' }
     ]
@@ -83,12 +82,6 @@ const menuItems = [
       { label: 'Lessons Learned', to: '/reports/lessons-learned' }
     ]
   },
-  {
-    id: 'chat',
-    label: 'Chat',
-    icon: 'ri-chat-3-line',
-    to: '/chat'
-  }
 ]
 
 const toggleMenu = (menuId) => {

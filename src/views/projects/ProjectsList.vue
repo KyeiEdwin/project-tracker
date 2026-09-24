@@ -14,7 +14,6 @@ const projects = ref([
     progress: 75,
     priority: 'high',
     dueDate: '2024-12-15',
-    budget: 50000,
     spent: 35000
   },
   {
@@ -26,7 +25,6 @@ const projects = ref([
     progress: 45,
     priority: 'medium',
     dueDate: '2024-12-20',
-    budget: 120000,
     spent: 54000
   },
   {
@@ -38,7 +36,6 @@ const projects = ref([
     progress: 100,
     priority: 'low',
     dueDate: '2024-11-30',
-    budget: 30000,
     spent: 28500
   },
   {
@@ -50,7 +47,6 @@ const projects = ref([
     progress: 60,
     priority: 'high',
     dueDate: '2024-12-10',
-    budget: 75000,
     spent: 45000
   },
   {
@@ -62,7 +58,6 @@ const projects = ref([
     progress: 10,
     priority: 'high',
     dueDate: '2024-12-25',
-    budget: 25000,
     spent: 2500
   }
 ])
@@ -103,9 +98,6 @@ const formatDate = (dateStr) => {
   })
 }
 
-const formatCurrency = (amount) => {
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(amount)
-}
 </script>
 
 <template>
@@ -157,7 +149,6 @@ const formatCurrency = (amount) => {
                 <th>Status</th>
                 <th>Progress</th>
                 <th>Priority</th>
-                <th>Budget</th>
                 <th>Due Date</th>
                 <th>Actions</th>
               </tr>
@@ -197,12 +188,6 @@ const formatCurrency = (amount) => {
                   <span class="badge" :class="getPriorityClass(project.priority)">
                     {{ project.priority }}
                   </span>
-                </td>
-                <td>
-                  <div>
-                    <span class="font-medium">{{ formatCurrency(project.spent) }}</span>
-                    <span class="text-textmuted text-xs"> / {{ formatCurrency(project.budget) }}</span>
-                  </div>
                 </td>
                 <td>{{ formatDate(project.dueDate) }}</td>
                 <td>

@@ -34,6 +34,7 @@ class Project extends Model
         'client',
         'settings',
         'owner_id',
+        'team_id',
     ];
 
     protected function casts(): array
@@ -77,6 +78,8 @@ class Project extends Model
             'spent' => $this->spent !== null ? (float) $this->spent : 0,
             'progress' => (int) $this->progress,
             'team' => $this->team,
+            'teamId' => $this->team_id,
+            'teamName' => $this->relationLoaded('teamRelation') ? $this->teamRelation?->name : $this->team,
             'client' => $this->client,
             'settings' => $this->settings ?? [],
         ];
@@ -90,6 +93,18 @@ class Project extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function teamRelation(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'team_id');
+    }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'users_projects')
+            ->withPivot(['project_role', 'permissions'])
+            ->withTimestamps();
     }
 
     public function stakeholders(): HasMany

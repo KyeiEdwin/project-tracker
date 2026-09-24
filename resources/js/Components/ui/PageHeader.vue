@@ -14,9 +14,10 @@ const props = defineProps({
 })
 
 const page = usePage()
+const homeUrl = computed(() => page.props.auth?.teamMember ? '/team-member/dashboard' : '/')
 
 const breadcrumbs = computed(() => {
-  const crumbs = [{ label: 'Home', to: '/' }]
+  const crumbs = [{ label: 'Home', to: homeUrl.value }]
   
   // Build breadcrumbs from route path
   const currentUrl = page.url.split('?')[0]
@@ -37,27 +38,65 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center justify-between page-header-breadcrumb flex-wrap gap-2">
-    <div>
-      <nav>
-        <ol class="breadcrumb mb-1">
-          <li 
-            v-for="(crumb, index) in breadcrumbs" 
-            :key="index" 
-            class="breadcrumb-item"
-            :class="{ 'active': !crumb.to }"
-            :aria-current="!crumb.to ? 'page' : undefined"
-          >
-            <Link v-if="crumb.to" :href="crumb.to">{{ crumb.label }}</Link>
-            <span v-else>{{ crumb.label }}</span>
-          </li>
-        </ol>
-      </nav>
-      <h1 class="page-title font-medium text-lg mb-0">{{ title }}</h1>
-      <p v-if="subtitle" class="text-textmuted dark:text-textmuted/50 text-sm mt-1">{{ subtitle }}</p>
-    </div>
-    <div class="btn-list">
-      <slot name="actions"></slot>
+  <div class="page-header mb-8">
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <!-- Breadcrumbs -->
+        <nav class="mb-3">
+          <ol class="breadcrumb-modern">
+            <li 
+              v-for="(crumb, index) in breadcrumbs" 
+              :key="index" 
+              class="breadcrumb-item-modern"
+            >
+              <Link 
+                v-if="crumb.to" 
+                :href="crumb.to"
+                class="text-gray-600 hover:text-green-600 dark:text-gray-400 dark:hover:text-green-400 transition-colors"
+              >
+                {{ crumb.label }}
+              </Link>
+              <span v-else class="text-gray-900 dark:text-gray-100 font-medium">
+                {{ crumb.label }}
+              </span>
+              <i v-if="index < breadcrumbs.length - 1" class="ri-arrow-right-s-line text-gray-400 mx-1"></i>
+            </li>
+          </ol>
+        </nav>
+        
+        <!-- Title -->
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-50 tracking-tight mb-2">
+          {{ title }}
+        </h1>
+        
+        <!-- Subtitle -->
+        <p v-if="subtitle" class="text-gray-600 dark:text-gray-400 text-base">
+          {{ subtitle }}
+        </p>
+      </div>
+      
+      <!-- Actions Slot -->
+      <div v-if="$slots.actions" class="flex items-center gap-3">
+        <slot name="actions"></slot>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.breadcrumb-modern {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.25rem;
+}
+
+.breadcrumb-item-modern {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+}
+</style>

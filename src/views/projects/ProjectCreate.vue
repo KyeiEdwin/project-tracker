@@ -11,7 +11,6 @@ const form = ref({
   description: '',
   startDate: '',
   endDate: '',
-  budget: '',
   priority: 'medium',
   status: 'planning',
   team: '',
@@ -94,13 +93,6 @@ const showHybridFields = computed(() => form.value.projectType === 'hybrid')
               <div class="col-span-12 md:col-span-6">
                 <label class="ti-form-label">End Date *</label>
                 <input v-model="form.endDate" type="date" class="ti-form-control">
-              </div>
-              <div class="col-span-12 md:col-span-6">
-                <label class="ti-form-label">Budget</label>
-                <div class="input-group">
-                  <span class="input-group-text">$</span>
-                  <input v-model="form.budget" type="number" class="ti-form-control" placeholder="0.00">
-                </div>
               </div>
               <div class="col-span-12 md:col-span-6">
                 <label class="ti-form-label">Priority</label>
