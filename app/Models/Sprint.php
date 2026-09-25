@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\SerializesForInertia;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,8 +24,7 @@ class Sprint extends Model
         'start_date',
         'end_date',
         'status',
-        'planned_points',
-        'completed_points',
+        // Note: planned_points and completed_points are now computed properties
     ];
 
     protected function casts(): array
@@ -32,9 +32,27 @@ class Sprint extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
-            'planned_points' => 'integer',
-            'completed_points' => 'integer',
         ];
+    }
+
+    /**
+     * Computed property: Sum of points from all backlog items in sprint
+     */
+    protected function plannedPoints(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->backlogItems()->sum('points') ?? 0
+        );
+    }
+
+    /**
+     * Computed property: Sum of points from done backlog items in sprint
+     */
+    protected function completedPoints(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->backlogItems()->where('status', 'done')->sum('points') ?? 0
+        );
     }
 
     /**
@@ -74,5 +92,15 @@ class Sprint extends Model
     public function backlogItems(): HasMany
     {
         return $this->hasMany(BacklogItem::class);
+    }
+
+    public function snapshots(): HasMany
+    {
+        return $this->hasMany(SprintSnapshot::class);
+    }
+
+    public function events(): HasMany
+    {
+        return $this->hasMany(SprintEvent::class)->orderBy('created_at', 'desc');
     }
 }

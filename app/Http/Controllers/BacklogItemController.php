@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreBacklogItemRequest;
 use App\Http\Requests\UpdateBacklogItemRequest;
 use App\Models\BacklogItem;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -76,5 +78,55 @@ class BacklogItemController extends Controller
         $backlogItem->delete();
 
         return redirect()->route('agile.backlog')->with('success', 'Backlog item removed.');
+    }
+
+    /**
+     * Update parent relationship for a backlog item
+     */
+    public function updateParent(Request $request, BacklogItem $backlogItem): JsonResponse
+    {
+        $validated = $request->validate([
+            'parent_id' => ['nullable', 'integer', 'exists:backlog_items,id'],
+        ]);
+
+        try {
+            $backlogItem->update(['parent_id' => $validated['parent_id']]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Parent updated successfully',
+                'backlog_item' => $backlogItem->fresh()->toInertia()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Update rank for a backlog item
+     */
+    public function updateRank(Request $request, BacklogItem $backlogItem): JsonResponse
+    {
+        $validated = $request->validate([
+            'rank' => ['required', 'integer', 'min:0'],
+        ]);
+
+        try {
+            $backlogItem->update(['rank' => $validated['rank']]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Rank updated successfully',
+                'backlog_item' => $backlogItem->fresh()->toInertia()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
     }
 }

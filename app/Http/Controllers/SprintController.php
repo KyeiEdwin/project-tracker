@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSprintRequest;
 use App\Http\Requests\UpdateSprintRequest;
+use App\Models\BacklogItem;
 use App\Models\Sprint;
 use App\Models\Task;
+use App\Services\SprintService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class SprintController extends Controller
 {
+    public function __construct(
+        protected SprintService $sprintService
+    ) {}
+    
     public function index(): Response
     {
         $page = $this->inertiaPage(
@@ -107,5 +115,173 @@ class SprintController extends Controller
         $sprint->delete();
 
         return redirect()->route('agile.sprints')->with('success', 'Sprint removed.');
+    }
+
+    /**
+     * Start a sprint
+     */
+    public function start(Sprint $sprint): JsonResponse
+    {
+        try {
+            $this->sprintService->startSprint($sprint);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Sprint started successfully',
+                'sprint' => $sprint->fresh()->toInertia()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Close a sprint
+     */
+    public function close(Sprint $sprint): JsonResponse
+    {
+        try {
+            $this->sprintService->closeSprint($sprint);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Sprint closed successfully',
+                'sprint' => $sprint->fresh()->toInertia()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Add backlog items to a sprint
+     */
+    public function addBacklogItems(Request $request, Sprint $sprint): JsonResponse
+    {
+        $validated = $request->validate([
+            'backlog_item_ids' => ['required', 'array', 'min:1'],
+            'backlog_item_ids.*' => ['required', 'integer', 'exists:backlog_items,id']
+        ]);
+
+        try {
+            $this->sprintService->addBacklogItems($sprint, $validated['backlog_item_ids']);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Items added to sprint successfully',
+                'sprint' => $sprint->fresh()->toInertia()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Remove a backlog item from a sprint
+     */
+    public function removeBacklogItem(Sprint $sprint, BacklogItem $backlogItem): JsonResponse
+    {
+        try {
+            $this->sprintService->removeBacklogItem($sprint, $backlogItem);
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Item removed from sprint successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Get burndown chart data for a sprint
+     */
+    public function burndown(Sprint $sprint): JsonResponse
+    {
+        try {
+            $burndownData = $this->sprintService->getBurndownData($sprint);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $burndownData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get velocity metrics for a sprint's project
+     */
+    public function velocity(Sprint $sprint): JsonResponse
+    {
+        try {
+            $velocityData = $this->sprintService->getVelocity($sprint->project);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $velocityData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get sprint event history
+     */
+    public function events(Sprint $sprint): JsonResponse
+    {
+        try {
+            $events = $this->sprintService->getSprintHistory($sprint);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $events->map(fn($event) => $event->toInertia())
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get comprehensive sprint metrics
+     */
+    public function metrics(Sprint $sprint): JsonResponse
+    {
+        try {
+            $metrics = $this->sprintService->getSprintMetrics($sprint);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $metrics
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

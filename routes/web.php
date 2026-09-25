@@ -154,6 +154,50 @@ Route::resource('budget-items', BudgetItemController::class)->middleware('can:bu
 Route::resource('milestones', MilestoneController::class)->middleware('can:milestone.view');
 Route::resource('sprints', SprintController::class)->middleware('can:sprint.manage');
 Route::resource('backlog-items', BacklogItemController::class)->middleware('can:agile.view');
+
+// Sprint lifecycle routes
+Route::post('/sprints/{sprint}/start', [SprintController::class, 'start'])
+    ->name('sprints.start')
+    ->middleware('can:sprint.manage');
+    
+Route::post('/sprints/{sprint}/close', [SprintController::class, 'close'])
+    ->name('sprints.close')
+    ->middleware('can:sprint.manage');
+
+// Sprint backlog management
+Route::post('/sprints/{sprint}/backlog-items', [SprintController::class, 'addBacklogItems'])
+    ->name('sprints.backlog-items.add')
+    ->middleware('can:sprint.manage');
+    
+Route::delete('/sprints/{sprint}/backlog-items/{backlogItem}', [SprintController::class, 'removeBacklogItem'])
+    ->name('sprints.backlog-items.remove')
+    ->middleware('can:sprint.manage');
+
+// Sprint metrics and analytics
+Route::get('/sprints/{sprint}/burndown', [SprintController::class, 'burndown'])
+    ->name('sprints.burndown')
+    ->middleware('can:agile.view');
+    
+Route::get('/sprints/{sprint}/velocity', [SprintController::class, 'velocity'])
+    ->name('sprints.velocity')
+    ->middleware('can:agile.view');
+    
+Route::get('/sprints/{sprint}/events', [SprintController::class, 'events'])
+    ->name('sprints.events')
+    ->middleware('can:agile.view');
+    
+Route::get('/sprints/{sprint}/metrics', [SprintController::class, 'metrics'])
+    ->name('sprints.metrics')
+    ->middleware('can:agile.view');
+
+// Backlog hierarchy management
+Route::patch('/backlog-items/{backlogItem}/parent', [BacklogItemController::class, 'updateParent'])
+    ->name('backlog-items.update-parent')
+    ->middleware('can:agile.view');
+    
+Route::patch('/backlog-items/{backlogItem}/rank', [BacklogItemController::class, 'updateRank'])
+    ->name('backlog-items.update-rank')
+    ->middleware('can:agile.view');
 Route::resource('agile-definitions', AgileDefinitionController::class)->middleware('can:agile.view');
 Route::resource('subtasks', SubtaskController::class)->middleware('can:subtask.view');
 Route::resource('workflows', WorkflowController::class)->except(['index'])->middleware('can:workflow.view');

@@ -3831,3 +3831,20 @@ LINE 1: ... where \"team_members\".\"deleted_at\" is null having \"completed...
 [2026-09-25 10:15:58] local.WARNING: Realtime task broadcast skipped. {"event":"App\\Events\\ProjectProgressUpdated","project_id":8,"error":"Pusher error: cURL error 7: Failed to connect to localhost:8080 after 2267 ms: Could not connect to server (see https://curl.se/libcurl/c/libcurl-errors.html) for http://localhost:8080/apps/384584/events?auth_key=xnlkc4voeiw5q6og6yej&auth_timestamp=1790331356&auth_version=1.0&body_md5=6d581de711dce2e141a2806979d14ac4&auth_signature=9ce3658d459586f4bc62eb9eaf494e37ef5ab49f17feca45533aa6a4e02597c5."} 
 [2026-09-25 10:23:11] local.WARNING: Realtime task broadcast skipped. {"project_id":8,"task_id":17,"error":"Pusher error: cURL error 7: Failed to connect to localhost:8080 after 2231 ms: Could not connect to server (see https://curl.se/libcurl/c/libcurl-errors.html) for http://localhost:8080/apps/384584/events?auth_key=xnlkc4voeiw5q6og6yej&auth_timestamp=1790331789&auth_version=1.0&body_md5=22d40d59854352e83a8ad01d34df7f60&auth_signature=3d887f18fc186428400ba6696bd10450b8265df2f2113cab6b823bfc3e59d166."} 
 [2026-09-25 10:25:51] local.WARNING: Realtime task broadcast skipped. {"project_id":3,"task_id":8,"error":"Pusher error: cURL error 7: Failed to connect to localhost:8080 after 2259 ms: Could not connect to server (see https://curl.se/libcurl/c/libcurl-errors.html) for http://localhost:8080/apps/384584/events?auth_key=xnlkc4voeiw5q6og6yej&auth_timestamp=1790331949&auth_version=1.0&body_md5=c5c936ac5b31868e44219be9ea7c2429&auth_signature=05363a46b5e119d228cb686223af44bac1e657b39d529de5f54741400baad91a."} 
+[2026-09-25 14:22:42] local.ERROR: Command "test" is not defined.
+
+Did you mean one of these?
+    make:test
+    schedule:test {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"test\" is not defined.
+
+Did you mean one of these?
+    make:test
+    schedule:test at C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('test')
+#1 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 

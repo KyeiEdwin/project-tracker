@@ -5,12 +5,16 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use App\Models\BacklogItem;
+use App\Models\Sprint;
 use App\Models\Task;
 use App\Models\TeamMember;
 use App\Models\Project;
 use App\Models\Milestone;
 use App\Policies\ProjectPolicy;
 use App\Policies\TaskPolicy;
+use App\Observers\BacklogItemObserver;
+use App\Observers\SprintObserver;
 use App\Observers\ProjectObserver;
 use App\Observers\TaskObserver;
 use App\Observers\MilestoneObserver;
@@ -51,6 +55,10 @@ class AppServiceProvider extends ServiceProvider
         Task::observe(TaskObserver::class);
         Milestone::observe(MilestoneObserver::class);
         TeamMember::observe(TeamMemberObserver::class);
+
+        // Register Agile Module observers
+        BacklogItem::observe(BacklogItemObserver::class);
+        Sprint::observe(SprintObserver::class);
 
         // Register event listeners
         Event::listen(TaskUpdated::class, InvalidateTaskMetricsCache::class);
