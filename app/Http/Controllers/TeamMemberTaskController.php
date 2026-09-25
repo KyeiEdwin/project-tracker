@@ -61,7 +61,9 @@ class TeamMemberTaskController extends Controller
             ]);
         });
 
-        $progress = $progressService->recalculate($task->project);
+        // Recalculate project progress
+        $progress = $progressService->calculateProgress($task->project, update: true);
+        
         try {
             event(new TaskUpdated($task->project_id, $task->fresh()->toInertia(), $progress));
             event(new ProjectProgressUpdated($task->project_id, $progress));

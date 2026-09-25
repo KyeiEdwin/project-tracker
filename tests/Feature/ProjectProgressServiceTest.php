@@ -22,7 +22,7 @@ class ProjectProgressServiceTest extends TestCase
         Task::query()->create($this->taskData($project, 'in-progress'));
         Task::query()->create($this->taskData($project, 'pending'));
 
-        $progress = app(ProjectProgressService::class)->recalculate($project);
+        $progress = app(ProjectProgressService::class)->calculateProgress($project, update: true);
 
         $this->assertSame(33, $progress);
         $this->assertSame(33, $project->refresh()->progress);
@@ -34,7 +34,7 @@ class ProjectProgressServiceTest extends TestCase
         Task::query()->create($this->taskData($project, 'in-progress', 10, 50));
         Task::query()->create($this->taskData($project, 'pending', 30, 0));
 
-        $progress = app(ProjectProgressService::class)->recalculate($project);
+        $progress = app(ProjectProgressService::class)->calculateProgress($project, update: true);
 
         $this->assertSame(13, $progress);
         $this->assertSame(13, $project->refresh()->progress);
@@ -46,7 +46,7 @@ class ProjectProgressServiceTest extends TestCase
         Task::query()->create($this->taskData($project, 'completed', 8, 0));
         Task::query()->create($this->taskData($project, 'pending', 8, 0));
 
-        $progress = app(ProjectProgressService::class)->recalculate($project);
+        $progress = app(ProjectProgressService::class)->calculateProgress($project, update: true);
 
         $this->assertSame(50, $progress);
     }
@@ -55,7 +55,7 @@ class ProjectProgressServiceTest extends TestCase
     {
         $project = Project::factory()->create(['progress' => 75]);
 
-        $progress = app(ProjectProgressService::class)->recalculate($project);
+        $progress = app(ProjectProgressService::class)->calculateProgress($project, update: true);
 
         $this->assertSame(0, $progress);
         $this->assertSame(0, $project->refresh()->progress);

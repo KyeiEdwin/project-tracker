@@ -87,7 +87,7 @@ class TaskController extends Controller
         $task = Task::query()->create($request->safe()->except('dependencies'));
         $this->syncAssigneeProjectMembership($task);
         $this->syncDependencies($task, $request->input('dependencies', []));
-        $progress = $progressService->recalculate($task->project);
+        $progress = $progressService->calculateProgress($task->project, update: true);
         $this->broadcastTaskChange($task, $progress);
 
         return redirect()->route('tasks.index')->with('success', 'Task created.');
@@ -134,7 +134,7 @@ class TaskController extends Controller
             $this->syncDependencies($task, $request->input('dependencies', []));
         }
 
-        $progress = $progressService->recalculate($task->project);
+        $progress = $progressService->calculateProgress($task->project, update: true);
         $this->broadcastTaskChange($task, $progress);
 
         return redirect()->route('tasks.index')->with('success', 'Task updated.');
@@ -156,7 +156,7 @@ class TaskController extends Controller
         $task->dependencies()->delete();
         $task->dependents()->delete();
         $task->delete();
-        $progress = $progressService->recalculate($project);
+        $progress = $progressService->calculateProgress($project, update: true);
         $this->broadcastTaskChange($task, $progress, true);
 
         return redirect()->route('tasks.index')->with('success', 'Task removed.');
