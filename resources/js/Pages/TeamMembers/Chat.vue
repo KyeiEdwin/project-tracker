@@ -15,8 +15,6 @@ const props = defineProps({
 })
 
 const page = usePage()
-const logoutForm = useForm({})
-const logout = () => logoutForm.post('/team-member/logout')
 const chatMessages = ref([...props.messages])
 const messageBody = ref('')
 const sendingMessage = ref(false)
@@ -157,9 +155,6 @@ const sendMessage = async () => {
         <h1 class="text-2xl font-semibold">{{ team?.name || 'Team chat' }}</h1>
         <p class="text-textmuted mt-1">Talk with members of your team in real time.</p>
       </div>
-      <button type="button" class="ti-btn ti-btn-light" :disabled="logoutForm.processing" @click="logout">
-        <i class="ri-logout-box-r-line me-1"></i> Sign out
-      </button>
     </div>
 
     <div v-if="!team" class="box">

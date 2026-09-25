@@ -26,9 +26,6 @@ const page = usePage()
 const permissions = computed(() => page.props.auth?.permissions || [])
 const canUpdateTaskStatus = computed(() => permissions.value.includes('member.task.status.update'))
 const canCompleteTask = computed(() => permissions.value.includes('member.task.complete'))
-
-const logoutForm = useForm({})
-const logout = () => logoutForm.post('/team-member/logout')
 const completingTaskId = ref(null)
 const realtimeChannels = []
 const dashboardRefreshing = ref(false)
@@ -169,17 +166,6 @@ const priorityColor = (priority) => {
             {{ roleContent.description }}
           </p>
         </div>
-        
-        <Button 
-          variant="light" 
-          size="md"
-          :loading="logoutForm.processing"
-          :disabled="logoutForm.processing"
-          @click="logout"
-        >
-          <i class="ri-logout-box-r-line mr-2"></i>
-          Sign out
-        </Button>
       </div>
     </div>
 
