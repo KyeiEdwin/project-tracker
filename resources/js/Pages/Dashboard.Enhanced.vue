@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { Link, router } from '@inertiajs/vue3'
 import ApexCharts from 'apexcharts'
 import MetricCard from '@/Components/ui/MetricCard.vue'
 import StatsCard from '@/Components/ui/StatsCard.vue'
@@ -9,8 +9,75 @@ import Badge from '@/Components/ui/Badge.vue'
 import ProgressBar from '@/Components/ui/ProgressBar.vue'
 import Avatar from '@/Components/ui/Avatar.vue'
 import Button from '@/Components/ui/Button.vue'
+import { useProgressColor } from '@/composables/useProgressColor'
+
+const props = defineProps({
+  metrics: {
+    type: Object,
+    required: true,
+    default: () => ({})
+  }
+})
+
+const { getProgressColorClass, getProgressTextClass } = useProgressColor()
 
 const charts = ref([])
+const isRefreshing = ref(false)
+
+// Computed values for metrics with defaults
+const totalProjects = computed(() => props.metrics.totalProjects?.value ?? 0)
+const activeTasks = computed(() => props.metrics.activeTasks?.value ?? 0)
+const teamMembers = computed(() => props.metrics.teamMembers?.value ?? 0)
+const completionRate = computed(() => props.metrics.completionRate?.value ?? 0)
+const pendingReviews = computed(() => props.metrics.pendingReviews?.value ?? 0)
+const overdueTasks = computed(() => props.metrics.overdueTasks?.value ?? 0)
+const milestones = computed(() => props.metrics.milestones?.value ?? 0)
+const budgetUsed = computed(() => props.metrics.budgetUsed?.value ?? 0)
+
+// Computed values for new sections
+const recentProjects = computed(() => props.metrics.recentProjects ?? [])
+const topPerformers = computed(() => props.metrics.topPerformers ?? [])
+
+// Format trend display
+const formatTrend = (metric) => {
+  if (!metric?.trend) return { direction: 'stable', value: '0%' }
+  
+  const percentage = metric.trend.percentage ?? 0
+  const direction = metric.trend.direction ?? 'stable'
+  
+  return {
+    direction: direction,
+    value: metric.trend.formatted ?? `${percentage}%`
+  }
+}
+
+// Manual refresh function
+const refreshMetrics = async () => {
+  isRefreshing.value = true
+  
+  try {
+    const response = await fetch('/dashboard/refresh', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+      }
+    })
+    
+    const data = await response.json()
+    
+    if (data.success) {
+      // Reload the page with fresh data
+      router.reload({ only: ['metrics'] })
+    }
+  } catch (error) {
+    console.error('Failed to refresh metrics:', error)
+  } finally {
+    setTimeout(() => {
+      isRefreshing.value = false
+    }, 500)
+  }
+}
 
 onMounted(() => {
   nextTick(() => {
@@ -157,13 +224,18 @@ const initializeCharts = () => {
           </p>
         </div>
         <div class="flex items-center gap-3">
+          <Button 
+            variant="secondary" 
+            size="md"
+            @click="refreshMetrics"
+            :disabled="isRefreshing"
+          >
+            <i :class="['ri-refresh-line mr-2', { 'animate-spin': isRefreshing }]"></i>
+            {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
+          </Button>
           <Button variant="secondary" size="md">
             <i class="ri-download-line mr-2"></i>
             Export
-          </Button>
-          <Button variant="primary" size="md">
-            <i class="ri-add-line mr-2"></i>
-            New Project
           </Button>
         </div>
       </div>
@@ -173,42 +245,42 @@ const initializeCharts = () => {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 pt-6 pb-4">
       <MetricCard
         title="Total Projects"
-        value="248"
+        :value="totalProjects.toString()"
         icon="ri-folder-line"
         color="green"
-        trend="up"
-        trend-value="+12.5%"
+        :trend="formatTrend(metrics.totalProjects).direction"
+        :trend-value="formatTrend(metrics.totalProjects).value"
         description="Active and completed"
       />
       
       <MetricCard
         title="Active Tasks"
-        value="1,429"
+        :value="activeTasks.toLocaleString()"
         icon="ri-checkbox-circle-line"
         color="blue"
-        trend="up"
-        trend-value="+8.2%"
+        :trend="formatTrend(metrics.activeTasks).direction"
+        :trend-value="formatTrend(metrics.activeTasks).value"
         description="In progress"
       />
       
       <MetricCard
         title="Team Members"
-        value="64"
+        :value="teamMembers.toString()"
         icon="ri-team-line"
         color="purple"
-        trend="up"
-        trend-value="+5"
+        :trend="formatTrend(metrics.teamMembers).direction"
+        :trend-value="formatTrend(metrics.teamMembers).value"
         description="Across all teams"
       />
       
       <MetricCard
         title="Completion Rate"
-        value="87%"
+        :value="`${completionRate}%`"
         icon="ri-trophy-line"
         color="orange"
-        trend="up"
-        trend-value="+3.1%"
-        description="This month"
+        :trend="formatTrend(metrics.completionRate).direction"
+        :trend-value="formatTrend(metrics.completionRate).value"
+        description="Project completion"
       />
     </div>
 
@@ -216,41 +288,43 @@ const initializeCharts = () => {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       <StatsCard
         title="Pending Reviews"
-        value="23"
+        :value="pendingReviews.toString()"
         icon="ri-eye-line"
         icon-bg="bg-emerald-600"
-        badge="+5 today"
+        :badge="`${metrics.pendingReviews?.metadata?.today ?? 0} today`"
         badge-class="badge-success"
-        trend="up"
+        :trend="formatTrend(metrics.pendingReviews).direction"
       />
       
       <StatsCard
         title="Overdue Tasks"
-        value="8"
+        :value="overdueTasks.toString()"
         icon="ri-alarm-warning-line"
         icon-bg="bg-red-600"
-        badge="3 critical"
+        :badge="`${metrics.overdueTasks?.metadata?.critical ?? 0} critical`"
         badge-class="badge-danger"
-        trend="down"
+        :trend="formatTrend(metrics.overdueTasks).direction"
       />
       
       <StatsCard
         title="Milestones"
-        value="12"
+        :value="milestones.toString()"
         icon="ri-flag-line"
         icon-bg="bg-blue-600"
-        badge="2 upcoming"
+        :badge="`${metrics.milestones?.metadata?.upcoming ?? 0} upcoming`"
         badge-class="badge-info"
       />
       
       <StatsCard
         title="Budget Used"
-        value="68%"
+        :value="`${budgetUsed}%`"
         icon="ri-funds-line"
         icon-bg="bg-purple-600"
-        badge="On track"
-        badge-class="badge-success"
-        subtitle="$340K of $500K"
+        :badge="budgetUsed > 80 ? 'High usage' : 'On track'"
+        :badge-class="budgetUsed > 80 ? 'badge-warning' : 'badge-success'"
+        :subtitle="metrics.budgetUsed?.metadata?.currencyFormatted ? 
+          `${metrics.budgetUsed.metadata.currencyFormatted.spent} of ${metrics.budgetUsed.metadata.currencyFormatted.budget}` : 
+          ''"
       />
     </div>
 
@@ -302,37 +376,48 @@ const initializeCharts = () => {
           </Link>
         </template>
         
-        <div class="space-y-4">
+        <div v-if="recentProjects.length > 0" class="space-y-4">
           <div 
-            v-for="project in [
-              { name: 'ERP System Upgrade', status: 'In Progress', progress: 75, team: 8, color: 'green' },
-              { name: 'Mobile App Development', status: 'Planning', progress: 25, team: 5, color: 'blue' },
-              { name: 'Cloud Migration', status: 'In Progress', progress: 60, team: 12, color: 'purple' },
-              { name: 'Security Audit', status: 'Review', progress: 90, team: 3, color: 'orange' }
-            ]"
-            :key="project.name"
+            v-for="project in recentProjects"
+            :key="project.id"
             class="p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-green-300 dark:hover:border-green-700 transition-colors"
           >
             <div class="flex items-center justify-between mb-3">
               <div class="flex-1">
-                <h4 class="font-semibold text-gray-900 dark:text-gray-100 mb-1">{{ project.name }}</h4>
-                <div class="flex items-center gap-3">
-                  <Badge :variant="project.color === 'green' ? 'success' : 'info'" size="sm">
+                <Link :href="`/projects/${project.id}`" class="font-semibold text-gray-900 dark:text-gray-100 mb-1 hover:text-green-600">
+                  {{ project.name }}
+                </Link>
+                <div class="flex items-center gap-3 mt-1">
+                  <Badge :variant="project.color === 'green' ? 'success' : project.color === 'blue' ? 'info' : project.color === 'orange' ? 'warning' : 'info'" size="sm">
                     {{ project.status }}
                   </Badge>
                   <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     <i class="ri-team-line"></i>
                     {{ project.team }} members
                   </span>
+                  <span class="text-xs text-gray-500 dark:text-gray-400">
+                    {{ project.updatedAt }}
+                  </span>
                 </div>
               </div>
             </div>
-            <ProgressBar :value="project.progress" show-label>
-              <template #label>
-                <span class="text-sm text-gray-600 dark:text-gray-400">Progress</span>
-              </template>
-            </ProgressBar>
+            <div class="relative">
+              <ProgressBar 
+                :value="project.progress" 
+                show-label
+                auto-color
+              >
+                <template #label>
+                  <span class="text-sm text-gray-600 dark:text-gray-400">Progress</span>
+                </template>
+              </ProgressBar>
+            </div>
           </div>
+        </div>
+        
+        <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+          <i class="ri-folder-open-line text-4xl mb-2"></i>
+          <p>No recent projects</p>
         </div>
       </Card>
 
@@ -344,20 +429,14 @@ const initializeCharts = () => {
           </Link>
         </template>
         
-        <div class="space-y-4">
+        <div v-if="topPerformers.length > 0" class="space-y-4">
           <div 
-            v-for="(member, index) in [
-              { name: 'Sarah Johnson', role: 'Senior Developer', tasks: 47, avatar: '/images/2.jpg' },
-              { name: 'Michael Chen', role: 'Project Lead', tasks: 42, avatar: '/images/3.jpg' },
-              { name: 'Emma Davis', role: 'UI/UX Designer', tasks: 38, avatar: '/images/4.jpg' },
-              { name: 'James Wilson', role: 'Backend Dev', tasks: 35, avatar: '/images/5.jpg' },
-              { name: 'Olivia Brown', role: 'QA Engineer', tasks: 32, avatar: '/images/6.jpg' }
-            ]"
-            :key="member.name"
+            v-for="member in topPerformers"
+            :key="member.id"
             class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
           >
             <div class="flex items-center gap-1">
-              <span class="text-lg font-bold text-gray-400 dark:text-gray-600 w-6">{{ index + 1 }}</span>
+              <span class="text-lg font-bold text-gray-400 dark:text-gray-600 w-6">{{ member.rank }}</span>
             </div>
             
             <Avatar 
@@ -377,6 +456,11 @@ const initializeCharts = () => {
               <div class="text-xs text-gray-500 dark:text-gray-400">tasks</div>
             </div>
           </div>
+        </div>
+        
+        <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
+          <i class="ri-team-line text-4xl mb-2"></i>
+          <p>No performance data available</p>
         </div>
       </Card>
     </div>

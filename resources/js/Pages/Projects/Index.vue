@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
+import { useProgressColor } from '@/composables/useProgressColor'
 
 const props = defineProps({
   projects: {
@@ -9,6 +10,8 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const { getProgressColorClass, getProgressTextClass } = useProgressColor()
 
 const searchQuery = ref('')
 const statusFilter = ref('all')
@@ -146,9 +149,18 @@ const deleteProject = (project) => {
                 <td>
                   <div class="flex items-center gap-2 min-w-[120px]">
                     <div class="progress progress-xs flex-1">
-                      <div class="progress-bar bg-primary" :style="{ width: project.progress + '%' }"></div>
+                      <div 
+                        class="progress-bar" 
+                        :class="getProgressColorClass(project.progress || 0)"
+                        :style="{ width: (project.progress || 0) + '%' }"
+                      ></div>
                     </div>
-                    <span class="text-xs text-textmuted">{{ project.progress }}%</span>
+                    <span 
+                      class="text-xs font-semibold"
+                      :class="getProgressTextClass(project.progress || 0)"
+                    >
+                      {{ project.progress || 0 }}%
+                    </span>
                   </div>
                 </td>
                 <td>

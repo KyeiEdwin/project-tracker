@@ -77,6 +77,15 @@ Route::post('/email/verification-notification', [AuthController::class, 'resendV
 
 Route::middleware(['auth:web', 'verified-or-admin'])->group(function () {
 Route::get('/', [DashboardController::class, 'index'])->middleware('can:dashboard.admin.view')->name('dashboard');
+
+// Dashboard API endpoints
+Route::prefix('dashboard')->name('dashboard.')->middleware('can:dashboard.admin.view')->group(function () {
+    Route::post('/refresh', [DashboardController::class, 'refresh'])->name('refresh');
+    Route::get('/cache-stats', [DashboardController::class, 'cacheStats'])->name('cache-stats');
+    Route::post('/invalidate/{metricKey}', [DashboardController::class, 'invalidateMetric'])->name('invalidate');
+    Route::post('/warm-cache', [DashboardController::class, 'warmCache'])->name('warm-cache');
+});
+
 Route::post('/teams', [TeamController::class, 'store'])->middleware('can:user.manage')->name('teams.store');
 Route::post('/teams/{team}/members', [TeamMemberController::class, 'addToTeam'])
     ->middleware('can:user.manage')->name('teams.members.store');
@@ -86,6 +95,8 @@ Route::prefix('projects')->name('projects.')->group(function () {
     Route::get('/create', [ProjectController::class, 'create'])->middleware('can:project.create')->name('create');
     Route::post('/', [ProjectController::class, 'store'])->middleware('can:project.create')->name('store');
     Route::get('/{project}/dashboard', [ProjectController::class, 'dashboard'])->middleware('can:project.view')->name('dashboard');
+    Route::get('/{project}/progress-breakdown', [ProjectController::class, 'progressBreakdown'])->middleware('can:project.view')->name('progress-breakdown');
+    Route::post('/{project}/recalculate-progress', [ProjectController::class, 'recalculateProgress'])->middleware('can:project.update')->name('recalculate-progress');
     Route::get('/{project}/edit', [ProjectController::class, 'edit'])->middleware('can:project.update')->name('edit');
     Route::put('/{project}', [ProjectController::class, 'update'])->middleware('can:project.update')->name('update');
     Route::patch('/{project}', [ProjectController::class, 'update'])->middleware('can:project.update');

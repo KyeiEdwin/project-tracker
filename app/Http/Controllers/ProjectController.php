@@ -6,12 +6,18 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\Team;
+use App\Services\ProjectProgressService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ProjectController extends Controller
 {
+    public function __construct(private ProjectProgressService $progressService)
+    {
+    }
+
     public function index(): Response
     {
         $page = $this->inertiaPage(
@@ -135,6 +141,57 @@ class ProjectController extends Controller
         return redirect()
             ->route('projects.index')
             ->with('success', 'Project archived.');
+    }
+
+    /**
+     * Get detailed progress breakdown for a project
+     */
+    public function progressBreakdown(Project $project): JsonResponse
+    {
+        $this->authorize('view', $project);
+
+        $breakdown = $this->progressService->getProgressBreakdown($project);
+        $completionEstimate = $this->progressService->estimateCompletionDate($project);
+
+        return response()->json([
+            'progress' => $project->progress,
+            'breakdown' => $breakdown,
+            'estimated_completion' => $completionEstimate,
+            'calculation_strategy' => $this->getStrategyName($project->project_type),
+        ]);
+    }
+
+    /**
+     * Manually trigger progress recalculation for a project
+     */
+    public function recalculateProgress(Project $project): JsonResponse
+    {
+        $this->authorize('update', $project);
+
+        $oldProgress = $project->progress;
+        $newProgress = $this->progressService->calculateProgress($project, update: true);
+        $breakdown = $this->progressService->getProgressBreakdown($project);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Progress recalculated successfully',
+            'old_progress' => $oldProgress,
+            'new_progress' => $newProgress,
+            'breakdown' => $breakdown,
+        ]);
+    }
+
+    /**
+     * Get the human-readable strategy name for a project type
+     */
+    private function getStrategyName(string $projectType): string
+    {
+        return match($projectType) {
+            'agile' => 'Milestone-based with task weighting',
+            'predictive' => 'Weighted by estimated hours',
+            'hybrid' => 'Hybrid (70% tasks + 30% milestones)',
+            default => 'Weighted by estimated hours with fallback',
+        };
     }
 
     /**

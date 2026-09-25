@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { useProgressColor } from '@/composables/useProgressColor'
 
 const props = defineProps({
   project: { type: Object, required: true },
@@ -21,6 +22,8 @@ const props = defineProps({
 })
 
 defineOptions({ layout: AppLayout })
+
+const { getProgressColorClass, getProgressTextClass } = useProgressColor()
 
 const taskMetrics = computed(() => [
   { label: 'Tasks', value: props.dashboard.tasks?.total ?? 0, icon: 'ri-list-check-2', tone: 'primary' },
@@ -53,10 +56,16 @@ const overviewMetrics = computed(() => [
       <div class="box-body">
         <div class="flex items-center justify-between mb-2">
           <span class="font-medium">Project progress</span>
-          <span class="text-primary font-semibold">{{ dashboard.progress }}%</span>
+          <span :class="['font-semibold text-lg', getProgressTextClass(dashboard.progress)]">
+            {{ dashboard.progress }}%
+          </span>
         </div>
         <div class="progress h-3" role="progressbar" :aria-valuenow="dashboard.progress" aria-valuemin="0" aria-valuemax="100">
-          <div class="progress-bar bg-primary" :style="{ width: `${dashboard.progress}%` }"></div>
+          <div 
+            class="progress-bar" 
+            :class="getProgressColorClass(dashboard.progress)"
+            :style="{ width: `${dashboard.progress}%` }"
+          ></div>
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@ import Badge from '@/Components/ui/Badge.vue'
 import Button from '@/Components/ui/Button.vue'
 import ProgressBar from '@/Components/ui/ProgressBar.vue'
 import EmptyState from '@/Components/ui/EmptyState.vue'
+import { useProgressColor } from '@/composables/useProgressColor'
 
 defineOptions({ layout: AppLayout })
 
@@ -21,6 +22,8 @@ const props = defineProps({
   tasks: { type: Array, default: () => [] },
   metrics: { type: Object, required: true },
 })
+
+const { getProgressColorClass, getProgressTextClass } = useProgressColor()
 
 const page = usePage()
 const permissions = computed(() => page.props.auth?.permissions || [])
@@ -291,15 +294,18 @@ const priorityColor = (priority) => {
               </Badge>
             </div>
             
-            <ProgressBar 
-              :value="project.progress || 0" 
-              show-label
-              size="md"
-            >
-              <template #label>
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
-              </template>
-            </ProgressBar>
+            <div class="relative">
+              <ProgressBar 
+                :value="project.progress || 0" 
+                show-label
+                size="md"
+                auto-color
+              >
+                <template #label>
+                  <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+                </template>
+              </ProgressBar>
+            </div>
             
             <div class="mt-3 flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
               <span v-if="project.start_date" class="flex items-center gap-1">

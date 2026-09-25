@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { Link, useForm } from '@inertiajs/vue3'
 import PageHeader from '@/Components/ui/PageHeader.vue'
 import { useProjectRealtime } from '@/composables/useProjectRealtime'
+import { useProgressColor } from '@/composables/useProgressColor'
 
 const props = defineProps({
   project: {
@@ -30,6 +31,8 @@ const props = defineProps({
     default: () => ({})
   }
 })
+
+const { getProgressColorClass, getProgressTextClass } = useProgressColor()
 
 const projectId = computed(() => props.project.id)
 const project = ref({ ...props.project })
@@ -309,10 +312,19 @@ const getPriorityClass = (priority) => {
           </div>
           <div class="box-body">
             <div class="text-center mb-4">
-              <span class="text-4xl font-bold text-primary">{{ project.progress }}%</span>
+              <span 
+                class="text-4xl font-bold" 
+                :class="getProgressTextClass(project.progress || 0)"
+              >
+                {{ project.progress || 0 }}%
+              </span>
             </div>
             <div class="progress progress-lg mb-4">
-              <div class="progress-bar bg-primary" :style="{ width: project.progress + '%' }"></div>
+              <div 
+                class="progress-bar" 
+                :class="getProgressColorClass(project.progress || 0)"
+                :style="{ width: (project.progress || 0) + '%' }"
+              ></div>
             </div>
             <div class="flex justify-between text-sm text-textmuted">
               <span>Started: {{ formatDate(project.startDate) }}</span>

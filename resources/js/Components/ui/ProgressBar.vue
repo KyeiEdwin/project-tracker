@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import { useProgressColor } from '@/composables/useProgressColor'
 
 const props = defineProps({
   value: {
@@ -18,10 +19,16 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: 'primary', // primary, success, warning, danger
-    validator: (value) => ['primary', 'success', 'warning', 'danger'].includes(value)
+    default: 'auto', // primary, success, warning, danger, info, auto
+    validator: (value) => ['primary', 'success', 'warning', 'danger', 'info', 'auto'].includes(value)
+  },
+  autoColor: {
+    type: Boolean,
+    default: false
   }
 })
+
+const { getProgressColorClass } = useProgressColor()
 
 const heightClass = computed(() => {
   if (props.size === 'sm') return 'h-1.5'
@@ -30,10 +37,17 @@ const heightClass = computed(() => {
 })
 
 const colorClass = computed(() => {
-  if (props.variant === 'success') return 'bg-green-500'
-  if (props.variant === 'warning') return 'bg-yellow-500'
-  if (props.variant === 'danger') return 'bg-red-500'
-  return 'bg-gradient-to-r from-green-600 to-emerald-500'
+  // Auto color based on progress value
+  if (props.autoColor || props.variant === 'auto') {
+    return getProgressColorClass(props.value)
+  }
+  
+  // Manual variant selection
+  if (props.variant === 'success') return 'bg-success'
+  if (props.variant === 'warning') return 'bg-warning'
+  if (props.variant === 'danger') return 'bg-danger'
+  if (props.variant === 'info') return 'bg-info'
+  return 'bg-primary'
 })
 </script>
 

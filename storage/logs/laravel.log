@@ -3578,3 +3578,133 @@ LINE 1: select * from \"team_messages\" where \"team_messages\".\"team_id...
 #68 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//XPS//He...')
 #69 {main}
 "} 
+[2026-09-25 01:59:44] local.WARNING: Realtime task broadcast skipped. {"project_id":5,"task_id":6,"error":"Pusher error: cURL error 7: Failed to connect to localhost:8080 after 2237 ms: Could not connect to server (see https://curl.se/libcurl/c/libcurl-errors.html) for http://localhost:8080/apps/384584/events?auth_key=xnlkc4voeiw5q6og6yej&auth_timestamp=1790301581&auth_version=1.0&body_md5=24486c127c8abb11829171cb98ef9ef2&auth_signature=cf220c7b349087c66d7268ab2e86d24d5bbbe989986f1733a99ba0a1800efe4c."} 
+[2026-09-25 02:23:07] local.ERROR: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "completed_tasks" does not exist
+LINE 1: ... where "team_members"."deleted_at" is null having "completed...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: project_tracker, SQL: select "id", "name", "email", (select count(*) from "tasks" where "team_members"."id" = "tasks"."team_member_id" and "status" in (completed, done) and extract(month from "updated_at") = 09 and "tasks"."deleted_at" is null) as "completed_tasks" from "team_members" where "team_members"."deleted_at" is null having "completed_tasks" > 0 order by "completed_tasks" desc limit 5) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 42703): SQLSTATE[42703]: Undefined column: 7 ERROR:  column \"completed_tasks\" does not exist
+LINE 1: ... where \"team_members\".\"deleted_at\" is null having \"completed...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: project_tracker, SQL: select \"id\", \"name\", \"email\", (select count(*) from \"tasks\" where \"team_members\".\"id\" = \"tasks\".\"team_member_id\" and \"status\" in (completed, done) and extract(month from \"updated_at\") = 09 and \"tasks\".\"deleted_at\" is null) as \"completed_tasks\" from \"team_members\" where \"team_members\".\"deleted_at\" is null having \"completed_tasks\" > 0 order by \"completed_tasks\" desc limit 5) at C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php:838)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate/Database/Connection->runQueryCallback('select \"id\", \"n...', Array, Object(Closure))
+#1 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(411): Illuminate/Database/Connection->run('select \"id\", \"n...', Array, Object(Closure))
+#2 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3505): Illuminate/Database/Connection->select('select \"id\", \"n...', Array, true)
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3490): Illuminate/Database/Query/Builder->runSelect()
+#4 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(4080): Illuminate/Database/Query/Builder->{closure:Illuminate/Database/Query/Builder::get():3489}()
+#5 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3489): Illuminate/Database/Query/Builder->onceWithColumns(Array, Object(Closure))
+#6 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(902): Illuminate/Database/Query/Builder->get(Array)
+#7 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(884): Illuminate/Database/Eloquent/Builder->getModels(Array)
+#8 C:/Users/XPS/Herd/project-tracker/app/Services/DashboardMetricsService.php(484): Illuminate/Database/Eloquent/Builder->get()
+#9 C:/Users/XPS/Herd/project-tracker/app/Services/DashboardMetricsService.php(35): App/Services/DashboardMetricsService->getTopPerformers()
+#10 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(145): App/Services/DashboardMetricsService->getAllMetrics()
+#11 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(52): App/Console/Commands/RefreshDashboardMetrics->handleFullRefresh(Object(App/Services/DashboardMetricsService), 1790302987.5049)
+#12 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App/Console/Commands/RefreshDashboardMetrics->handle(Object(App/Services/DashboardMetricsService))
+#13 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::{closure:Illuminate/Container/BoundMethod::call():35}()
+#14 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#15 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#16 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#17 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate/Container/Container->call(Array)
+#18 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#19 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#20 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#21 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(App/Console/Commands/RefreshDashboardMetrics), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#22 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#23 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#24 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#25 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#26 {main}
+
+[previous exception] [object] (PDOException(code: 42703): SQLSTATE[42703]: Undefined column: 7 ERROR:  column \"completed_tasks\" does not exist
+LINE 1: ... where \"team_members\".\"deleted_at\" is null having \"completed...
+                                                             ^ at C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php:425)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(425): PDOStatement->execute()
+#1 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(827): Illuminate/Database/Connection->{closure:Illuminate/Database/Connection::select():411}('select \"id\", \"n...', Array)
+#2 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(794): Illuminate/Database/Connection->runQueryCallback('select \"id\", \"n...', Array, Object(Closure))
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Connection.php(411): Illuminate/Database/Connection->run('select \"id\", \"n...', Array, Object(Closure))
+#4 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3505): Illuminate/Database/Connection->select('select \"id\", \"n...', Array, true)
+#5 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3490): Illuminate/Database/Query/Builder->runSelect()
+#6 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(4080): Illuminate/Database/Query/Builder->{closure:Illuminate/Database/Query/Builder::get():3489}()
+#7 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3489): Illuminate/Database/Query/Builder->onceWithColumns(Array, Object(Closure))
+#8 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(902): Illuminate/Database/Query/Builder->get(Array)
+#9 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(884): Illuminate/Database/Eloquent/Builder->getModels(Array)
+#10 C:/Users/XPS/Herd/project-tracker/app/Services/DashboardMetricsService.php(484): Illuminate/Database/Eloquent/Builder->get()
+#11 C:/Users/XPS/Herd/project-tracker/app/Services/DashboardMetricsService.php(35): App/Services/DashboardMetricsService->getTopPerformers()
+#12 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(145): App/Services/DashboardMetricsService->getAllMetrics()
+#13 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(52): App/Console/Commands/RefreshDashboardMetrics->handleFullRefresh(Object(App/Services/DashboardMetricsService), 1790302987.5049)
+#14 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App/Console/Commands/RefreshDashboardMetrics->handle(Object(App/Services/DashboardMetricsService))
+#15 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::{closure:Illuminate/Container/BoundMethod::call():35}()
+#16 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#17 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#18 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#19 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate/Container/Container->call(Array)
+#20 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#21 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#22 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#23 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(App/Console/Commands/RefreshDashboardMetrics), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#24 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#25 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#26 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#27 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#28 {main}
+"} 
+[2026-09-25 02:23:45] local.ERROR: Undefined array key "value" {"exception":"[object] (ErrorException(code: 0): Undefined array key \"value\" at C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php:156)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(262): Illuminate/Foundation/Bootstrap/HandleExceptions->handleError(2, 'Undefined array...', 'C://Users//XPS//He...', 156)
+#1 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(156): Illuminate/Foundation/Bootstrap/HandleExceptions->{closure:Illuminate/Foundation/Bootstrap/HandleExceptions::forwardsTo():261}(2, 'Undefined array...', 'C://Users//XPS//He...', 156)
+#2 C:/Users/XPS/Herd/project-tracker/app/Console/Commands/RefreshDashboardMetrics.php(52): App/Console/Commands/RefreshDashboardMetrics->handleFullRefresh(Object(App/Services/DashboardMetricsService), 1790303025.278)
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): App/Console/Commands/RefreshDashboardMetrics->handle(Object(App/Services/DashboardMetricsService))
+#4 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Util.php(43): Illuminate/Container/BoundMethod::{closure:Illuminate/Container/BoundMethod::call():35}()
+#5 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(96): Illuminate/Container/Util::unwrapIfClosure(Object(Closure))
+#6 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate/Container/BoundMethod::callBoundMethod(Object(Illuminate/Foundation/Application), Array, Object(Closure))
+#7 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Container/Container.php(799): Illuminate/Container/BoundMethod::call(Object(Illuminate/Foundation/Application), Array, Array, NULL)
+#8 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate/Container/Container->call(Array)
+#9 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Command/Command.php(341): Illuminate/Console/Command->execute(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#10 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#11 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#12 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(App/Console/Commands/RefreshDashboardMetrics), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#13 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#14 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#15 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#16 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#17 {main}
+"} 
+[2026-09-25 02:28:16] local.ERROR: Command "tinker" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('tinker')
+#1 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 
+[2026-09-25 03:02:42] local.ERROR: Command "tinker" is not defined. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"tinker\" is not defined. at C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php:759)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(298): Symfony/Component/Console/Application->find('tinker')
+#1 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#2 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#3 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#4 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#5 {main}
+"} 
+[2026-09-25 03:02:55] local.ERROR: The "--columns" option does not exist. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\RuntimeException(code: 0): The \"--columns\" option does not exist. at C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Input/ArgvInput.php:226)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Input/ArgvInput.php(153): Symfony/Component/Console/Input/ArgvInput->addLongOption('columns', 'project_id,titl...')
+#1 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Input/ArgvInput.php(88): Symfony/Component/Console/Input/ArgvInput->parseLongOption('--columns=proje...')
+#2 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Input/ArgvInput.php(77): Symfony/Component/Console/Input/ArgvInput->parseToken('--columns=proje...', true)
+#3 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Input/Input.php(53): Symfony/Component/Console/Input/ArgvInput->parse()
+#4 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Command/Command.php(295): Symfony/Component/Console/Input/Input->bind(Object(Symfony/Component/Console/Input/InputDefinition))
+#5 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony/Component/Console/Command/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Illuminate/Console/OutputStyle))
+#6 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(1117): Illuminate/Console/Command->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#7 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(356): Symfony/Component/Console/Application->doRunCommand(Object(Illuminate/Database/Console/TableCommand), Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#8 C:/Users/XPS/Herd/project-tracker/vendor/symfony/console/Application.php(195): Symfony/Component/Console/Application->doRun(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#9 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(198): Symfony/Component/Console/Application->run(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#10 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate/Foundation/Console/Kernel->handle(Object(Symfony/Component/Console/Input/ArgvInput), Object(Symfony/Component/Console/Output/ConsoleOutput))
+#11 C:/Users/XPS/Herd/project-tracker/artisan(15): Illuminate/Foundation/Application->handleCommand(Object(Symfony/Component/Console/Input/ArgvInput))
+#12 {main}
+"} 
+[2026-09-25 03:03:37] local.ERROR: Undefined array key "total_tasks" {"exception":"[object] (ErrorException(code: 0): Undefined array key \"total_tasks\" at C:/Users/XPS/Herd/project-tracker/test-progress-tracking.php:84)
+[stacktrace]
+#0 C:/Users/XPS/Herd/project-tracker/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(262): Illuminate/Foundation/Bootstrap/HandleExceptions->handleError(2, 'Undefined array...', 'C://Users//XPS//He...', 84)
+#1 C:/Users/XPS/Herd/project-tracker/test-progress-tracking.php(84): Illuminate/Foundation/Bootstrap/HandleExceptions->{closure:Illuminate/Foundation/Bootstrap/HandleExceptions::forwardsTo():261}(2, 'Undefined array...', 'C://Users//XPS//He...', 84)
+#2 {main}
+"} 
