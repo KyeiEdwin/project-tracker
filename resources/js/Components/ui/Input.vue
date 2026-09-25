@@ -44,10 +44,17 @@ const emit = defineEmits(['update:modelValue'])
 
 const inputClass = computed(() => {
   const classes = [
-    'w-full px-4 py-2.5 text-sm rounded-xl border transition-all duration-200',
+    'w-full text-sm rounded-xl border transition-all duration-200',
     'focus:outline-none focus:ring-2',
     'disabled:opacity-50 disabled:cursor-not-allowed'
   ]
+  
+  // Enhanced padding for better visual spacing
+  if (props.icon) {
+    classes.push('pl-12 pr-4 py-3')
+  } else {
+    classes.push('px-4 py-3')
+  }
   
   if (props.error) {
     classes.push('border-red-300 focus:border-red-500 focus:ring-red-500/20')
@@ -59,11 +66,15 @@ const inputClass = computed(() => {
     )
   }
   
-  if (props.icon) {
-    classes.push('pl-12')
-  }
-  
   return classes.join(' ')
+})
+
+const iconClass = computed(() => {
+  return [
+    'absolute left-4 top-1/2 -translate-y-1/2',
+    'text-gray-400 dark:text-gray-500',
+    'text-lg pointer-events-none'
+  ].join(' ')
 })
 </script>
 
@@ -80,8 +91,7 @@ const inputClass = computed(() => {
     <div class="relative">
       <i 
         v-if="icon" 
-        :class="icon"
-        class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg"
+        :class="[icon, iconClass]"
       ></i>
       
       <input
@@ -105,3 +115,26 @@ const inputClass = computed(() => {
     </p>
   </div>
 </template>
+
+<style scoped>
+/* Enhanced input placeholder styling */
+input::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+.dark input::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+/* Smooth transitions for focus states */
+input:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.dark input:focus {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+</style>

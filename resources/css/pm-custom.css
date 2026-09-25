@@ -1413,3 +1413,439 @@ body {
               color 0.2s ease,
               box-shadow 0.2s ease;
 }
+
+
+/* ============================================
+   ENHANCED INPUT FIELD PADDING & SPACING
+   ============================================ */
+
+/* Global form input improvements */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+select,
+textarea,
+.form-control,
+.ti-form-control {
+  padding: 0.75rem 1rem !important;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+/* Input fields with icons - Enhanced left padding */
+input.pl-10,
+input[class*="ps-10"],
+.form-control.pl-10,
+.ti-form-control.pl-10,
+.ti-form-control.\!ps-10 {
+  padding-left: 3rem !important;
+}
+
+/* Input fields with icons - Enhanced right padding for trailing icons */
+input.pr-10,
+input[class*="pe-10"],
+.form-control.pr-10,
+.ti-form-control.pr-10 {
+  padding-right: 3rem !important;
+}
+
+/* Input placeholders - Better visibility */
+input::placeholder,
+select::placeholder,
+textarea::placeholder,
+.form-control::placeholder,
+.ti-form-control::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+  font-size: 0.9375rem;
+}
+
+.dark input::placeholder,
+.dark select::placeholder,
+.dark textarea::placeholder,
+.dark .form-control::placeholder,
+.dark .ti-form-control::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+/* Focus states - Enhanced visibility */
+input:focus,
+select:focus,
+textarea:focus,
+.form-control:focus,
+.ti-form-control:focus {
+  outline: none;
+  border-color: rgb(var(--primary-green)) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-green), 0.1) !important;
+  transform: translateY(-1px);
+}
+
+.dark input:focus,
+.dark select:focus,
+.dark textarea:focus,
+.dark .form-control:focus,
+.dark .ti-form-control:focus {
+  border-color: rgb(var(--primary-green-light)) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-green-light), 0.1) !important;
+}
+
+/* Icon positioning for inputs with icons */
+.relative input + i,
+.relative i + input ~ i,
+input ~ i[class*="ri-"],
+input ~ i[class*="bi-"] {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .relative input + i,
+.dark .relative i + input ~ i,
+.dark input ~ i[class*="ri-"],
+.dark input ~ i[class*="bi-"] {
+  color: #6b7280;
+}
+
+/* Search bars - Special styling */
+input[type="search"],
+.search-input,
+.header-search-bar {
+  padding-left: 3rem !important;
+  padding-right: 1rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  border-radius: var(--radius-pill) !important;
+  background-color: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.dark input[type="search"],
+.dark .search-input,
+.dark .header-search-bar {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+/* Search icon specific positioning */
+.header-search .header-search-icon,
+.search-container .search-icon,
+input[type="search"] ~ i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Select dropdowns - Enhanced padding */
+select,
+.form-select,
+.ti-form-select {
+  padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+  background-position: right 0.75rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  appearance: none;
+}
+
+/* Textarea - Enhanced padding */
+textarea,
+.form-textarea,
+.ti-form-textarea {
+  padding: 0.75rem 1rem !important;
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Input groups - Better spacing */
+.input-group {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.input-group input {
+  border-radius: 0 !important;
+}
+
+.input-group input:first-child {
+  border-top-left-radius: var(--radius-lg) !important;
+  border-bottom-left-radius: var(--radius-lg) !important;
+}
+
+.input-group input:last-child {
+  border-top-right-radius: var(--radius-lg) !important;
+  border-bottom-right-radius: var(--radius-lg) !important;
+}
+
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #f9fafb;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.dark .input-group-text {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #9ca3af;
+}
+
+/* Checkbox and Radio - Better alignment */
+input[type="checkbox"],
+input[type="radio"],
+.form-check-input {
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-top: 0 !important;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+  border: 2px solid #d1d5db;
+  transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:checked,
+input[type="radio"]:checked,
+.form-check-input:checked {
+  background-color: rgb(var(--primary-green));
+  border-color: rgb(var(--primary-green));
+}
+
+.dark input[type="checkbox"],
+.dark input[type="radio"],
+.dark .form-check-input {
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: transparent;
+}
+
+.dark input[type="checkbox"]:checked,
+.dark input[type="radio"]:checked,
+.dark .form-check-input:checked {
+  background-color: rgb(var(--primary-green-light));
+  border-color: rgb(var(--primary-green-light));
+}
+
+/* Form labels - Better spacing */
+label,
+.form-label,
+.ti-form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.dark label,
+.dark .form-label,
+.dark .ti-form-label {
+  color: #d1d5db;
+}
+
+/* Form validation states */
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid,
+.form-control.is-invalid,
+.ti-form-control.is-invalid {
+  border-color: rgb(var(--danger-rgb)) !important;
+}
+
+input.is-invalid:focus,
+select.is-invalid:focus,
+textarea.is-invalid:focus,
+.form-control.is-invalid:focus,
+.ti-form-control.is-invalid:focus {
+  box-shadow: 0 0 0 3px rgba(var(--danger-rgb), 0.1) !important;
+}
+
+input.is-valid,
+select.is-valid,
+textarea.is-valid,
+.form-control.is-valid,
+.ti-form-control.is-valid {
+  border-color: rgb(var(--success-rgb)) !important;
+}
+
+input.is-valid:focus,
+select.is-valid:focus,
+textarea.is-valid:focus,
+.form-control.is-valid:focus,
+.ti-form-control.is-valid:focus {
+  box-shadow: 0 0 0 3px rgba(var(--success-rgb), 0.1) !important;
+}
+
+/* Disabled state */
+input:disabled,
+select:disabled,
+textarea:disabled,
+.form-control:disabled,
+.ti-form-control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: #f9fafb;
+}
+
+.dark input:disabled,
+.dark select:disabled,
+.dark textarea:disabled,
+.dark .form-control:disabled,
+.dark .ti-form-control:disabled {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+/* Input size variants */
+.form-control-sm,
+.ti-form-control-sm {
+  padding: 0.5rem 0.875rem !important;
+  font-size: 0.875rem;
+}
+
+.form-control-lg,
+.ti-form-control-lg {
+  padding: 1rem 1.25rem !important;
+  font-size: 1.0625rem;
+}
+
+/* ============================================
+   SEARCH BAR SPECIFIC ENHANCEMENTS
+   ============================================ */
+
+/* All search bars across the app */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-container input {
+  width: 100%;
+}
+
+.search-container .search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.dark .search-container .search-icon {
+  color: #6b7280;
+}
+
+/* Dashboard search bars */
+.page-header .search-input,
+.dashboard-search input,
+.table-search input {
+  padding-left: 3rem !important;
+  padding-right: 1rem !important;
+  min-width: 280px;
+}
+
+@media (min-width: 768px) {
+  .page-header .search-input,
+  .dashboard-search input,
+  .table-search input {
+    min-width: 320px;
+  }
+}
+
+/* Filter search bars */
+.filter-search {
+  position: relative;
+}
+
+.filter-search input {
+  padding-left: 2.75rem !important;
+}
+
+.filter-search i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+  font-size: 1rem;
+}
+
+/* ============================================
+   RESPONSIVE INPUT ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  select,
+  textarea,
+  .form-control,
+  .ti-form-control {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+  
+  .search-container input,
+  .page-header .search-input,
+  .dashboard-search input {
+    min-width: 100%;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS FOR INPUTS
+   ============================================ */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  input,
+  select,
+  textarea,
+  .form-control,
+  .ti-form-control {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  input,
+  select,
+  textarea,
+  .form-control,
+  .ti-form-control {
+    transition: none !important;
+  }
+}
+
+/* Focus visible for keyboard navigation */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+.form-control:focus-visible,
+.ti-form-control:focus-visible {
+  outline: 2px solid rgb(var(--primary-green));
+  outline-offset: 2px;
+}

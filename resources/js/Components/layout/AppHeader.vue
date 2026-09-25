@@ -116,7 +116,7 @@ onUnmounted(() => {
           <input 
             v-model="searchQuery"
             autocomplete="off" 
-            class="header-search-bar form-control pl-10" 
+            class="header-search-bar form-control" 
             placeholder="Search anything here ..." 
             type="text"
           />
@@ -354,6 +354,45 @@ onUnmounted(() => {
 
 .dark .header-search-icon {
   color: #d1d5db;
+}
+
+/* Enhanced Search Bar Styling */
+.header-search-bar {
+  padding-left: 3rem !important;
+  padding-right: 1rem !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.header-search-bar:focus {
+  outline: none;
+  border-color: rgb(22, 163, 74);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  transform: translateY(-1px);
+}
+
+.dark .header-search-bar:focus {
+  border-color: rgb(134, 239, 172);
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.1);
+}
+
+.header-search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.125rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.header-search {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
 }
 
 /* Notification Pulse - Enhanced Visibility in Dark Mode */
